@@ -1,3 +1,10 @@
+%%
+%{
+    J. Vranicar Bio/Robotic Locomotion
+    Hw Matlab 1A
+    jjv20@fsu.edu
+%}
+
 %% Part 1
 
 %% Task 1
@@ -21,21 +28,27 @@ Age_Vector = [0:my_age:9*my_age]';
 
 %% Part 2
 
-x = linspace(0, 5, 600);
+x = linspace(0, 5, 500);
 
 y = x.^3 - 3.*x - 2;
 
-figure()
-plot(x, y)
-xlim([0 5])
-hold on
-x = round(x, 2);
-scatter_indices = mod(x, .5) == 0;
-scatter(x(scatter_indices), y(scatter_indices),'g*');
+search_xs = 0:.5:5;
+
+y_interp = interp1(x, y, search_xs);
+
 [~, min_index] = min(y);
 [~, max_index] = max(y);
-scatter(x(min_index), y(min_index));
-scatter(x(max_index), y(max_index));
+
+figure()
+    grid on
+    hold on
+    plot(x, y)
+    scatter(search_xs, y_interp, 'g*')
+    scatter(x(min_index), y(min_index));
+    scatter(x(max_index), y(max_index));
+    xlim([-2 7])
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
