@@ -6,14 +6,15 @@ clc; clear; close all; format compact
     ball.  This way I am able to use a non-zero height for the dynamics of
     the bounce phase
 %}
-ball_response(5);
+ball_response(1);
 
 
 %% Function
 function ball_response(initial_height)
 state = "flight";
-coeff_restitution = .5;
+
 ball_radius = .2;
+spring_natrual_length = .02;
 
 figure();
 hold on
@@ -48,13 +49,14 @@ for i = 1:5
             init = [Y1(end, 1), Y1(end, 2)];
             last_end_time = max(T1) + last_end_time;
             state = "stance";
+            clear T1 Y1
 
         case "stance"
              % Calculate the response
             [T1, Y1] = ode45(@stance_dynamics, time, init, stance_options);
 
             % Plot the response
-            plot(T1 + last_end_time, Y1(:, 1), 'b--');
+            plot(T1 + last_end_time, Y1(:, 1), 'r--');
             xlabel("Time (s)")
             ylabel("Ball Height at Center (m)")
             title("Ball Height vs Time")
@@ -65,6 +67,7 @@ for i = 1:5
             init = [Y1(end, 1), Y1(end, 2)];
             last_end_time = max(T1) + last_end_time;
             state = "flight";
+            clear T1 Y1
 
 
     end
@@ -81,7 +84,7 @@ end
     end
 
     function [position,isterminal,direction] = stance_event_func(t,y)
-        position = y(1) - ball_radius; % The value that we want to be zero
+        position = y(1) - spring_natrual_length; % The value that we want to be zero
         isterminal = 1;  % Halt integration
         direction = 1;   % Zero approached by increasing values
     end
@@ -103,10 +106,10 @@ end
     function func = stance_dynamics(t,y)
 
         g = 9.81;
-        kp = 1000;
+        kp = 50;
         kd = 1;
-        m = 2;
-        L = .02;
+        m = .5;
+        L = spring_natrual_length;
 
         y1 = y(1);
         y2 = y(2);
