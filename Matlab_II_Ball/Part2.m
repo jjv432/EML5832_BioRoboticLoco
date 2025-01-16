@@ -14,7 +14,7 @@ function ball_response(initial_height)
 state = "flight";
 
 ball_radius = .2;
-spring_natrual_length = .02;
+spring_natrual_length = ball_radius;
 
 figure();
 hold on
@@ -106,8 +106,8 @@ end
     function func = stance_dynamics(t,y)
 
         g = 9.81;
-        kp = 5000;
-        kd = .5;
+        kp = 500;
+        kd = 5;
         m = .5;
         L = spring_natrual_length;
 
