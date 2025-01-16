@@ -6,7 +6,7 @@ clc; clear; close all; format compact
     ball.  This way I am able to use a non-zero height for the dynamics of
     the bounce phase
 %}
-ball_response(1);
+ball_response(3);
 
 
 %% Function
@@ -84,7 +84,7 @@ end
     end
 
     function [position,isterminal,direction] = stance_event_func(t,y)
-        position = y(1) - spring_natrual_length; % The value that we want to be zero
+        position = y(1) - ball_radius; % The value that we want to be zero
         isterminal = 1;  % Halt integration
         direction = 1;   % Zero approached by increasing values
     end
@@ -106,8 +106,8 @@ end
     function func = stance_dynamics(t,y)
 
         g = 9.81;
-        kp = 50;
-        kd = 1;
+        kp = 5000;
+        kd = .5;
         m = .5;
         L = spring_natrual_length;
 
@@ -115,7 +115,7 @@ end
         y2 = y(2);
 
         y1p = y(2);
-        y2p = kp*(L - y(1))/m + kd*y1p/m -g;
+        y2p = kp*(L - y(1))/m - kd*y1p/m -g;
 
         func = [y1p; y2p];
     end
