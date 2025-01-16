@@ -29,7 +29,7 @@ flight_options = odeset('Events', @flight_event_func);
 stance_options = odeset('Events', @stance_event_func);
 
 % Calculate the response for multiple bounces
-for i = 1:5
+for i = 1:9
 
     switch(state)
 
@@ -38,9 +38,10 @@ for i = 1:5
             [T1, Y1] = ode45(@flight_dynamics, time, init, flight_options);
 
             % Plot the response
-            plot(T1 + last_end_time, Y1(:, 1), 'b--');
+            h1 = plot(T1 + last_end_time, Y1(:, 1), 'b--', 'DisplayName', 'Flight');
             xlabel("Time (s)")
             ylabel("Ball Height at Center (m)")
+            
             title("Ball Height vs Time")
 
             % Set the new initial value for the next solving.  Algebraically, the
@@ -56,9 +57,10 @@ for i = 1:5
             [T1, Y1] = ode45(@stance_dynamics, time, init, stance_options);
 
             % Plot the response
-            plot(T1 + last_end_time, Y1(:, 1), 'r--');
+            h2 = plot(T1 + last_end_time, Y1(:, 1), 'r--', 'DisplayName', 'Stance');
             xlabel("Time (s)")
             ylabel("Ball Height at Center (m)")
+            
             title("Ball Height vs Time")
 
             % Set the new initial value for the next solving.  Algebraically, the
@@ -72,8 +74,8 @@ for i = 1:5
 
     end
 
-
 end
+legend([h2 h1], "Stance", "Flight");
 
 % This function is used to determine when an 'event' occurs; i.e. when
 % the ball hits the ground
