@@ -31,6 +31,8 @@ function draw_ball(Ball, Kinematics, drop_height)
     hold on
     grid on
     title("Spring Mass Damper Response of a Ball");
+    xlabel("Horizontal Position (m)")
+    ylabel("Vertical Position (m)")
     vid = VideoWriter("MatlabIII_Pt1.avi");
     fps = 60;
     vid.FrameRate = fps;

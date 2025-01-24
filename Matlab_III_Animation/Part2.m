@@ -5,23 +5,9 @@ clc; clear; close all; format compact
     -damper model of ground contact
 %}
 
-%{
-Notes: Not sure why I can't assign a handle to the fill command, need to
-figure that out so that I'm not clearing the horizontal line
-%}
-
 plotBool = 0;
-animationBool = 0;
+animationBool = 1;
 drop_height = 15;
-
-% global K userInputKBool
-% 
-% userKInputNY = input("Do you want to enter values for Kp and Kd? (Y/N)", 's');
-% if userKInputNY == 'Y'
-%     userInputKBool = 1;
-%     K.kp = input("Enter the value of kp: ");
-%     K.kd = input("Enter the value of kd: ");
-% end
 
 Kinematics = ball_response(drop_height, plotBool);
 
@@ -52,7 +38,7 @@ function draw_ball(Ball, Kinematics, drop_height, animationBool)
 
     fps = 60;
     if animationBool
-        vid = VideoWriter("MatlabIII_Pt1.avi");
+        vid = VideoWriter("MatlabIII_Pt2.avi");
         vid.FrameRate = fps;
         vid.Quality = 85;
         open(vid);
@@ -62,7 +48,7 @@ function draw_ball(Ball, Kinematics, drop_height, animationBool)
 
     Energies = energy_calc(Kinematics);
 
-    for i = 1:20:fps*10 %Ensures video is 10 seconds long
+    for i = 1:fps*10 %Ensures video is 10 seconds long
         cla(h1);
 
         h1 = subplot(1, 3, 1);
@@ -81,15 +67,18 @@ function draw_ball(Ball, Kinematics, drop_height, animationBool)
         h2 = scatter(i/fps, Kinematics.Y_Position(i), 'r*');
         title("Ball Trajectory vs Time");
         xlabel("Time (s)");
-        ylabel("Ball Height (m)")
+        ylabel("Ball Vertical Position (m)")
         axis([0 i/fps -1 drop_height + 1])
 
         subplot(1, 3, 3)
         hold on
         grid on
-        plot(linspace(0, i/fps, i), Energies.Potential_Y(1:i), 'g')
+        plot(linspace(0, i/fps, i), Energies.Potential_Y(1:i), 'b')
         plot(linspace(0, i/fps, i), Energies.Kinetic_Y(1:i), 'r')
-        legend("Potential Energy", "Kinetic Energy", 'location', 'west')
+        plot(linspace(0, i/fps, i), Energies.Total_Energy(1:i), '--k')
+        legend("Potential Energy", "Kinetic Energy", "Total Energy", 'location', 'NorthOutside')
+        xlabel("Time(s)")
+        ylabel("Energy (J)");
 
         drawnow;
         if animationBool
@@ -105,14 +94,36 @@ end
 
 function Energies = energy_calc(Kinematics)
     m = .5;
-    Potential_Y = Kinematics.Y_Position * 9.81 * m; % .5 is mass
-    Kinetic_Y = (1/2) * m * Kinematics.Y_Velocity.^2;
+    kp = 750;
+    r = .2;
 
+    for k = 1:numel(Kinematics.Y_Position)
+
+
+        Grav_Potential_Y(k) = Kinematics.Y_Position(k) * 9.81 * m; % .5 is mass
+
+        if Kinematics.Y_Position(k) <= r
+            Spring_Potential_Y(k) = (1/2) * kp * (r - Kinematics.Y_Position(k))^2;
+        else
+            Spring_Potential_Y(k) = 0;
+        end
+
+        Kinetic_Y(k) = (1/2) * m * Kinematics.Y_Velocity(k)^2;
+
+
+    end
     Energies.Kinetic_Y = Kinetic_Y;
-    Energies.Potential_Y = Potential_Y;
+    Energies.Potential_Y = Grav_Potential_Y + Spring_Potential_Y;
+    Energies.Total_Energy = Kinetic_Y + Grav_Potential_Y + Spring_Potential_Y;
+
 end
+
 function Kinematics = ball_response(initial_height, plotBool)
 
+    Kinematics.Stance.Y_Position = [];
+    Kinematics.Stance.Y_Velocity = [];
+    Kinematics.Flight.Y_Position = [];
+    Kinematics.Flight.Y_Velocity = [];
     Kinematics.Y_Position = [];
     Kinematics.Y_Velocity = [];
 
@@ -231,8 +242,8 @@ function Kinematics = ball_response(initial_height, plotBool)
         %     kp = K.kp;
         %     kd = K.kd;
         % else
-            kp = 750;
-            kd = 15;
+        kp = 750;
+        kd = 15;
         % end
         m = .5;
         L = spring_natrual_length;
