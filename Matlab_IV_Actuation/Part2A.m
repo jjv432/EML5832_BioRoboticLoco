@@ -78,7 +78,9 @@ function Kinematics = ball_response(initial_height, plotBool)
     heavy_stance_options = odeset('Events', @stance_heavy_event_func);
 
     % Calculate the response for multiple bounces
-    for i = 1:9
+    maxT = 0;
+    while (maxT < 5)
+        maxT
 
         switch(state)
 
@@ -102,6 +104,7 @@ function Kinematics = ball_response(initial_height, plotBool)
                 last_end_time = max(T1) + last_end_time;
                 state = "stance_light";
                 Kinematics.Y_Position = [Kinematics.Y_Position; Y1];
+                maxT = max(T1);
                 clear T1 Y1
 
             case "stance_light"
@@ -123,6 +126,7 @@ function Kinematics = ball_response(initial_height, plotBool)
                 last_end_time = max(T1) + last_end_time;
                 state = "stance_heavy";
                 Kinematics.Y_Position = [Kinematics.Y_Position; Y1];
+                maxT = max(T1);
                 clear T1 Y1
 
             case "stance_heavy"
@@ -144,6 +148,7 @@ function Kinematics = ball_response(initial_height, plotBool)
                 last_end_time = max(T1) + last_end_time;
                 state = "flight";
                 Kinematics.Y_Position = [Kinematics.Y_Position; Y1];
+                maxT = max(T1);
                 clear T1 Y1
 
 
@@ -165,7 +170,7 @@ function Kinematics = ball_response(initial_height, plotBool)
     function [position,isterminal,direction] = stance_light_event_func(t,y)
         position = y(2); % The value that we want to be zero
         isterminal = 1;  % Halt integration
-        direction = 0;   
+        direction = -1;   
     end
 
     function [position,isterminal,direction] = stance_heavy_event_func(t,y)
@@ -210,7 +215,7 @@ function Kinematics = ball_response(initial_height, plotBool)
     function func = stance_heavy_dynamics(t,y)
 
         g = 9.81;
-        kp = 1000;
+        kp = 10000;
         kd = 5;
         m = .5;
         L = spring_natrual_length;
