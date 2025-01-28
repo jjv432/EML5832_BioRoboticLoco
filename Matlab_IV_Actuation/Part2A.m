@@ -80,7 +80,7 @@ function Kinematics = ball_response(initial_height, plotBool)
     % Calculate the response for multiple bounces
     maxT = 0;
     while (maxT < 5)
-        maxT
+        
 
         switch(state)
 
@@ -135,7 +135,7 @@ function Kinematics = ball_response(initial_height, plotBool)
 
                 % Plot the response
                 if plotBool
-                    h2 = plot(T1 + last_end_time, Y1(:, 1), 'r--', 'DisplayName', 'Stance');
+                    h3 = plot(T1 + last_end_time, Y1(:, 1), 'r--', 'DisplayName', 'Stance');
                     xlabel("Time (s)")
                     ylabel("Ball Height at Center (m)")
 
@@ -156,7 +156,7 @@ function Kinematics = ball_response(initial_height, plotBool)
 
     end
     if plotBool
-        legend([h2 h1], "Stance", "Flight");
+        legend([h2 h1 h3], "Stance", "Flight", "Flight");
     end
 
     % This function is used to determine when an 'event' occurs; i.e. when
