@@ -41,15 +41,15 @@ function draw_ball(Ball, Kinematics, drop_height)
     vid.Quality = 85;
     % open(vid);
 
-    for i = 1:numel(Kinematics.Y_Position) %Ensures video is 10 seconds long
-        cla
-        fill(Ball.X_Points, Ball.Y_Points + Kinematics.Y_Position(i), 'r');
-        drawnow;
-        % writeVideo(vid, getframe(gcf));
-    end
+    % for i = 1:numel(Kinematics.Y_Position) %Ensures video is 10 seconds long
+    %     cla
+    %     fill(Ball.X_Points, Ball.Y_Points + Kinematics.Y_Position(i), 'r');
+    %     drawnow;
+    %     % writeVideo(vid, getframe(gcf));
+    % end
 
     % close(vid);
-    figure(); plot(Kinematics.Y_Position)
+    figure(); plot(Kinematics.T, Kinematics.Y_Position)
 end
 
 
@@ -72,6 +72,7 @@ function Kinematics = ball_response(initial_height)
     light_stance_options = odeset('Events', @stance_light_event_func);
     heavy_stance_options = odeset('Events', @stance_heavy_event_func);
 
+    T = [];
     % Calculate the response for multiple bounces
     for i = 1:15
 
@@ -85,7 +86,9 @@ function Kinematics = ball_response(initial_height)
                 % velocity is determined.  Last_end_time is used for plotting the
                 % bounces sequentially
                 init = [Y1(end, 1), Y1(end, 2)];
+                T = [T; T1(1:end-1) + last_end_time];
                 last_end_time = max(T1) + last_end_time;
+                
                 state = "stance_light";
                 Kinematics.Y_Position = [Kinematics.Y_Position; Y1(1:end-1, 1)]; % End of this one is beginning of the next one, values were duplicated before
                 clear T1 Y1
@@ -93,8 +96,10 @@ function Kinematics = ball_response(initial_height)
             case "stance_light"
                 % Calculate the response
                 [T1, Y1] = ode45(@stance_light_dynamics, time, init, light_stance_options);
-                init = [Y1(end, 1), Y1(end, 2)];                
+                init = [Y1(end, 1), Y1(end, 2)];    
+                T = [T; T1(1:end-1)+ last_end_time];
                 last_end_time = max(T1) + last_end_time;
+                
                 state = "stance_heavy";
                 Kinematics.Y_Position = [Kinematics.Y_Position; Y1(1:end-1, 1)];
                 clear T1 Y1
@@ -103,7 +108,9 @@ function Kinematics = ball_response(initial_height)
                 % Calculate the response
                 [T1, Y1] = ode45(@stance_heavy_dynamics, time, init, heavy_stance_options);
                 init = [Y1(end, 1), Y1(end, 2)];
+                T = [T; T1(1:end-1)+ last_end_time];
                 last_end_time = max(T1) + last_end_time;
+                
                 state = "flight";
                 Kinematics.Y_Position = [Kinematics.Y_Position; Y1(1:end-1, 1)];
                 clear T1 Y1
@@ -112,6 +119,7 @@ function Kinematics = ball_response(initial_height)
         end
 
     end
+    Kinematics.T = T;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
