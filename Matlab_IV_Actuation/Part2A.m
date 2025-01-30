@@ -11,6 +11,10 @@ draw_ball(Ball, Kinematics, drop_height);
 
 %% Functions
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%                PLOTTING FUNCTIONS                 %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function Ball = create_ball(radius)
 
     thetas = linspace(0, 2*pi, 100);
@@ -47,6 +51,12 @@ function draw_ball(Ball, Kinematics, drop_height)
     % close(vid);
     figure(); plot(Kinematics.Y_Position)
 end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%              STATE-BASED FUNCTION                 %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function Kinematics = ball_response(initial_height)
 
     Kinematics.Y_Position = [];
@@ -63,7 +73,6 @@ function Kinematics = ball_response(initial_height)
     heavy_stance_options = odeset('Events', @stance_heavy_event_func);
 
     % Calculate the response for multiple bounces
-    maxT = 0;
     for i = 1:15
 
         switch(state)
@@ -79,37 +88,24 @@ function Kinematics = ball_response(initial_height)
                 last_end_time = max(T1) + last_end_time;
                 state = "stance_light";
                 Kinematics.Y_Position = [Kinematics.Y_Position; Y1(1:end-1, 1)]; % End of this one is beginning of the next one, values were duplicated before
-                maxT = max(T1);
                 clear T1 Y1
 
             case "stance_light"
                 % Calculate the response
                 [T1, Y1] = ode45(@stance_light_dynamics, time, init, light_stance_options);
-
-                % Set the new initial value for the next solving.  Algebraically, the
-                % velocity is determined.  Last_end_time is used for plotting the
-                % bounces sequentially
-                init = [Y1(end, 1), Y1(end, 2)];
-                % init = [Y1(end, 1), 5];
-                
+                init = [Y1(end, 1), Y1(end, 2)];                
                 last_end_time = max(T1) + last_end_time;
                 state = "stance_heavy";
                 Kinematics.Y_Position = [Kinematics.Y_Position; Y1(1:end-1, 1)];
-                maxT = max(T1);
                 clear T1 Y1
 
             case "stance_heavy"
                 % Calculate the response
                 [T1, Y1] = ode45(@stance_heavy_dynamics, time, init, heavy_stance_options);
-
-                % Set the new initial value for the next solving.  Algebraically, the
-                % velocity is determined.  Last_end_time is used for plotting the
-                % bounces sequentially
                 init = [Y1(end, 1), Y1(end, 2)];
                 last_end_time = max(T1) + last_end_time;
                 state = "flight";
                 Kinematics.Y_Position = [Kinematics.Y_Position; Y1(1:end-1, 1)];
-                maxT = max(T1);
                 clear T1 Y1
 
 
@@ -117,6 +113,10 @@ function Kinematics = ball_response(initial_height)
 
     end
 end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%               EVENT FUNCTIONS                     %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % This function is used to determine when an 'event' occurs; i.e. when
 % the ball hits the ground
@@ -140,6 +140,11 @@ function [position,isterminal,direction] = stance_heavy_event_func(t,y)
     isterminal = 1;  % Halt integration
     direction = 1;   % Zero approached by increasing values
 end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%            DYNAMICS FUNCTIONS                     %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Dynamics of the system using the force of gravity as the only force
 function func = flight_dynamics(t, y)
