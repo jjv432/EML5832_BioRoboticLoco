@@ -4,10 +4,8 @@ clc; clear; close all; format compact
 
 %}
 
-
-plotBool = 0;
 drop_height = .10;
-Kinematics = ball_response(drop_height, plotBool);
+Kinematics = ball_response(drop_height);
 Ball = create_ball(.02);
 draw_ball(Ball, Kinematics, drop_height);
 
@@ -43,16 +41,13 @@ function draw_ball(Ball, Kinematics, drop_height)
         cla
         fill(Ball.X_Points, Ball.Y_Points + Kinematics.Y_Position(i), 'r');
         drawnow;
-    
-
         % writeVideo(vid, getframe(gcf));
-
-
     end
+
     % close(vid);
     figure(); plot(Kinematics.Y_Position)
 end
-function Kinematics = ball_response(initial_height, plotBool)
+function Kinematics = ball_response(initial_height)
 
     Kinematics.Y_Position = [];
 
@@ -126,9 +121,6 @@ end
 % This function is used to determine when an 'event' occurs; i.e. when
 % the ball hits the ground
 function [position,isterminal,direction] = flight_event_func(t,y)
-    % disp("Flight**********************");
-    % y
-    % keyboard
     ball_radius = .02;
     position = y(1) - ball_radius; % The value that we want to be zero
     isterminal = 1;  % Halt integration
@@ -144,10 +136,6 @@ function [position,isterminal,direction] = stance_light_event_func(t,y)
 end
 
 function [position,isterminal,direction] = stance_heavy_event_func(t,y)
-    % disp("Heavy**********************");
-    % y
-    % keyboard
-    ball_radius = .02;
     position = y(1) -.0005; % The value that we want to be zero
     isterminal = 1;  % Halt integration
     direction = 1;   % Zero approached by increasing values
