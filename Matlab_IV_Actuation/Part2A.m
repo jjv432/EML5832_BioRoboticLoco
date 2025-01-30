@@ -41,15 +41,19 @@ function draw_ball(Ball, Kinematics, drop_height)
     vid.Quality = 85;
     % open(vid);
 
-    % for i = 1:numel(Kinematics.Y_Position) %Ensures video is 10 seconds long
+    % for i = 2:numel(Kinematics.Y_Position) %Ensures video is 10 seconds long
     %     cla
     %     fill(Ball.X_Points, Ball.Y_Points + Kinematics.Y_Position(i), 'r');
-    %     drawnow;
+    %     pause(Kinematics.T(i) - Kinematics.T(i-1));
     %     % writeVideo(vid, getframe(gcf));
     % end
 
     % close(vid);
-    figure(); plot(Kinematics.T, Kinematics.Y_Position)
+    figure(); 
+    plot(Kinematics.T, Kinematics.Y_Position)
+    title("Time Response of the Ball");
+    xlabel("Time (s)");
+    ylabel("Vertical Position (m)");
 end
 
 
