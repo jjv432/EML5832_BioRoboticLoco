@@ -83,7 +83,7 @@ function Kinematics = ball_response(initial_height, plotBool)
                 init = [Y1(end, 1), Y1(end, 2)];
                 last_end_time = max(T1) + last_end_time;
                 state = "stance_light";
-                Kinematics.Y_Position = [Kinematics.Y_Position; Y1(:, 1)];
+                Kinematics.Y_Position = [Kinematics.Y_Position; Y1(1:end-1, 1)]; % End of this one is beginning of the next one, values were duplicated before
                 maxT = max(T1);
                 clear T1 Y1
 
@@ -99,7 +99,7 @@ function Kinematics = ball_response(initial_height, plotBool)
                 
                 last_end_time = max(T1) + last_end_time;
                 state = "stance_heavy";
-                Kinematics.Y_Position = [Kinematics.Y_Position; Y1(:, 1)];
+                Kinematics.Y_Position = [Kinematics.Y_Position; Y1(1:end-1, 1)];
                 maxT = max(T1);
                 clear T1 Y1
 
@@ -113,7 +113,7 @@ function Kinematics = ball_response(initial_height, plotBool)
                 init = [Y1(end, 1), Y1(end, 2)];
                 last_end_time = max(T1) + last_end_time;
                 state = "flight";
-                Kinematics.Y_Position = [Kinematics.Y_Position; Y1(:, 1)];
+                Kinematics.Y_Position = [Kinematics.Y_Position; Y1(1:end-1, 1)];
                 maxT = max(T1);
                 clear T1 Y1
 
