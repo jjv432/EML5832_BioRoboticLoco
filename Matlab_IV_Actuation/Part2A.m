@@ -78,7 +78,7 @@ function Kinematics = ball_response(initial_height)
 
     T = [];
     % Calculate the response for multiple bounces
-    for i = 1:15
+    for i = 1:25
 
         switch(state)
 
@@ -148,7 +148,7 @@ function [position,isterminal,direction] = stance_light_event_func(t,y)
 end
 
 function [position,isterminal,direction] = stance_heavy_event_func(t,y)
-    position = y(1) -.0005; % The value that we want to be zero
+    position = y(1) -.02; % The value that we want to be zero
     isterminal = 1;  % Halt integration
     direction = 1;   % Zero approached by increasing values
 end
@@ -177,8 +177,8 @@ end
 function func = stance_light_dynamics(t,y)
 
     g = 9.81;
-    kp = 250;
-    kd = 7;
+    kp = 200;
+    kd = 15;
     m = .5;
     spring_natural_length =.02;
     L = spring_natural_length;
@@ -195,8 +195,8 @@ end
 function func = stance_heavy_dynamics(t,y)
 
     g = 9.81;
-    kp = 580;
-    kd = 0;
+    kp = 700;
+    kd = 1;
     m = .5;
     spring_natural_length = .02;
     L = spring_natural_length;
