@@ -4,10 +4,26 @@ clc; clear; close all; format compact
 
 %}
 
+% Human Data
+scaling_factor = 0.30;
+
+HumanData.length = 1; %m
+HumanData.mass = 80; %kg
+HumanData.stiffness = 20000; %N/m
+HumanData.touchdown_angle = 1.2; %rad
+HumanData.stride_freq = 5; %hz
+HumanData.horiz_velo = 3; %m/s
+
+ScaledHuman = dynamic_scaler(HumanData, scaling_factor);
+ScaledHuman.Dampening = 3.8;
+
 drop_height = .10;
-Kinematics = ball_response(drop_height);
+Kinematics = ball_response(drop_height, ScaledHuman);
 Ball = create_ball(.02);
-draw_ball(Ball, Kinematics, drop_height);
+draw_ball(Kinematics, ScaledHuman);
+
+
+
 
 %% Functions
 
@@ -26,37 +42,16 @@ function Ball = create_ball(radius)
 
 end
 
-function draw_ball(Ball, Kinematics, drop_height)
-    % figure();
-    % axis equal
-    % axis([-4*Ball.Radius 4*Ball.Radius -.1 , drop_height*1.2]);
-    % hold on
-    % grid on
-    % title("Spring Mass Damper Response of a Ball");
-    % xlabel("Horizontal Position (m)")
-    % ylabel("Vertical Position (m)")
-    % vid = VideoWriter("MatlabIII_Pt1.avi");
-    % fps = 60;
-    % vid.FrameRate = fps;
-    % vid.Quality = 85;
-    % open(vid);
-
-    % for i = 2:numel(Kinematics.Y_Position) %Ensures video is 10 seconds long
-    %     cla
-    %     fill(Ball.X_Points, Ball.Y_Points + Kinematics.Y_Position(i), 'r');
-    %     pause(Kinematics.T(i) - Kinematics.T(i-1));
-    %     % writeVideo(vid, getframe(gcf));
-    % end
-
-    % close(vid);
-    figure(); 
+function draw_ball(Kinematics, ScaledHuman)
+    figure();
     plot(Kinematics.T, Kinematics.Y_Position)
     title("Time Response of the Variable Stiffness Ball");
     xlabel("Time (s)");
     ylabel("Vertical Position (m)");
     grid on
+    ylim([-.2 .2]);
 
-    fprintf("The original stiffness magnitude is %d N/m, and is changed to %d N/m after contact\n", 200, 700);
+    fprintf("The original stiffness magnitude is %.1f N/m, and is changed to %.1f N/m after contact\n", ScaledHuman.stiffness, 1.165*ScaledHuman.stiffness);
 end
 
 
@@ -64,7 +59,7 @@ end
 %%%%              STATE-BASED FUNCTION                 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function Kinematics = ball_response(initial_height)
+function Kinematics = ball_response(initial_height, Scaled)
 
     Kinematics.Y_Position = [];
 
@@ -81,7 +76,7 @@ function Kinematics = ball_response(initial_height)
 
     T = [];
     % Calculate the response for multiple bounces
-    for i = 1:25
+    for i = 1:30
 
         switch(state)
 
@@ -95,29 +90,29 @@ function Kinematics = ball_response(initial_height)
                 init = [Y1(end, 1), Y1(end, 2)];
                 T = [T; T1(1:end-1) + last_end_time];
                 last_end_time = max(T1) + last_end_time;
-                
+
                 state = "stance_light";
                 Kinematics.Y_Position = [Kinematics.Y_Position; Y1(1:end-1, 1)]; % End of this one is beginning of the next one, values were duplicated before
                 clear T1 Y1
 
             case "stance_light"
                 % Calculate the response
-                [T1, Y1] = ode45(@stance_light_dynamics, time, init, light_stance_options);
-                init = [Y1(end, 1), Y1(end, 2)];    
+                [T1, Y1] = ode45(@(T1, Y1) stance_light_dynamics(T1, Y1, Scaled), time, init, light_stance_options);
+                init = [Y1(end, 1), Y1(end, 2)];
                 T = [T; T1(1:end-1)+ last_end_time];
                 last_end_time = max(T1) + last_end_time;
-                
+
                 state = "stance_heavy";
                 Kinematics.Y_Position = [Kinematics.Y_Position; Y1(1:end-1, 1)];
                 clear T1 Y1
 
             case "stance_heavy"
                 % Calculate the response
-                [T1, Y1] = ode45(@stance_heavy_dynamics, time, init, heavy_stance_options);
+                [T1, Y1] = ode45(@(T1, Y1) stance_heavy_dynamics(T1, Y1, Scaled), time, init, heavy_stance_options);
                 init = [Y1(end, 1), Y1(end, 2)];
                 T = [T; T1(1:end-1)+ last_end_time];
                 last_end_time = max(T1) + last_end_time;
-                
+
                 state = "flight";
                 Kinematics.Y_Position = [Kinematics.Y_Position; Y1(1:end-1, 1)];
                 clear T1 Y1
@@ -143,7 +138,7 @@ function [position,isterminal,direction] = flight_event_func(t,y)
 end
 
 function [position,isterminal,direction] = stance_light_event_func(t,y)
-    
+
     position = y(2); % The value that we want to be zero
     isterminal = 1;  % Halt integration
     direction = 0;
@@ -151,7 +146,7 @@ function [position,isterminal,direction] = stance_light_event_func(t,y)
 end
 
 function [position,isterminal,direction] = stance_heavy_event_func(t,y)
-    position = y(1) -.02; % The value that we want to be zero
+    position = y(1) -.01; % The value that we want to be zero
     isterminal = 1;  % Halt integration
     direction = 1;   % Zero approached by increasing values
 end
@@ -177,12 +172,14 @@ end
 
 % Dynamics of the system when it is acting as a mass-spring-damper
 % during stance
-function func = stance_light_dynamics(t,y)
+function func = stance_light_dynamics(t,y, ScaledHuman)
+
 
     g = 9.81;
-    kp = 200;
-    kd = 15;
-    m = .5;
+    m = ScaledHuman.mass;
+    kp = ScaledHuman.stiffness;
+    kd = ScaledHuman.Dampening;
+
     spring_natural_length =.02;
     L = spring_natural_length;
 
@@ -195,14 +192,16 @@ function func = stance_light_dynamics(t,y)
     func = [y1p; y2p];
 end
 
-function func = stance_heavy_dynamics(t,y)
+function func = stance_heavy_dynamics(t,y, ScaledHuman)
+
 
     g = 9.81;
-    kp = 700;
-    kd = 1;
-    m = .5;
     spring_natural_length = .02;
     L = spring_natural_length;
+
+    m = ScaledHuman.mass;
+    kp = 1.165*ScaledHuman.stiffness;
+    kd = ScaledHuman.Dampening;
 
     y1 = y(1);
     y2 = y(2);
@@ -213,3 +212,18 @@ function func = stance_heavy_dynamics(t,y)
     func = [y1p; y2p];
 end
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%           DYNAMIC SCALING FUNCTION                %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function scaled_struct = dynamic_scaler(input_struct, alpha_l)
+
+    scaled_struct.length = input_struct.length * alpha_l;
+    scaled_struct.mass = input_struct.mass * (alpha_l)^3;
+    scaled_struct.stiffness = input_struct.stiffness * (alpha_l)^2;
+    scaled_struct.touchdown_angle = input_struct.touchdown_angle;
+    scaled_struct.stride_freq = input_struct.stride_freq * (alpha_l)^(-1/2);
+    scaled_struct.horiz_velo = input_struct.horiz_velo * (alpha_l)^(1/2);
+
+end
