@@ -27,18 +27,18 @@ function Ball = create_ball(radius)
 end
 
 function draw_ball(Ball, Kinematics, drop_height)
-    figure();
-    axis equal
-    axis([-4*Ball.Radius 4*Ball.Radius -.1 , drop_height*1.2]);
-    hold on
-    grid on
-    title("Spring Mass Damper Response of a Ball");
-    xlabel("Horizontal Position (m)")
-    ylabel("Vertical Position (m)")
-    vid = VideoWriter("MatlabIII_Pt1.avi");
-    fps = 60;
-    vid.FrameRate = fps;
-    vid.Quality = 85;
+    % figure();
+    % axis equal
+    % axis([-4*Ball.Radius 4*Ball.Radius -.1 , drop_height*1.2]);
+    % hold on
+    % grid on
+    % title("Spring Mass Damper Response of a Ball");
+    % xlabel("Horizontal Position (m)")
+    % ylabel("Vertical Position (m)")
+    % vid = VideoWriter("MatlabIII_Pt1.avi");
+    % fps = 60;
+    % vid.FrameRate = fps;
+    % vid.Quality = 85;
     % open(vid);
 
     % for i = 1:numel(Kinematics.Y_Position) %Ensures video is 10 seconds long
@@ -51,9 +51,13 @@ function draw_ball(Ball, Kinematics, drop_height)
     % close(vid);
     figure(); 
     plot(Kinematics.T, Kinematics.Y_Position)
-    title("Time Response of the Ball");
+    title("Time Response of the Constant-Force Model Ball");
     xlabel("Time (s)");
     ylabel("Vertical Position (m)");
+    grid on
+
+    fprintf("The force value required for hopping is %d N\n", 10);
+
 end
 
 
@@ -79,7 +83,7 @@ function Kinematics = ball_response(initial_height)
     T = [];
 
     % Calculate the response for multiple bounces
-    for i = 1:15
+    for i = 1:25
 
         switch(state)
 
@@ -149,7 +153,7 @@ function [position,isterminal,direction] = stance_no_force_event_func(t,y)
 end
 
 function [position,isterminal,direction] = stance_force_event_func(t,y)
-    position = y(1) -.0005; % The value that we want to be zero
+    position = y(1) -.02; % The value that we want to be zero
     isterminal = 1;  % Halt integration
     direction = 1;   % Zero approached by increasing values
 end
@@ -201,7 +205,7 @@ function func = stance_force_dynamics(t,y)
     m = .5;
     spring_natural_length = .02;
     L = spring_natural_length;
-    Force = 19;
+    Force = 10;
 
     y1 = y(1);
     y2 = y(2);

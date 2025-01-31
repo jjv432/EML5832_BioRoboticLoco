@@ -27,18 +27,18 @@ function Ball = create_ball(radius)
 end
 
 function draw_ball(Ball, Kinematics, drop_height)
-    figure();
-    axis equal
-    axis([-4*Ball.Radius 4*Ball.Radius -.1 , drop_height*1.2]);
-    hold on
-    grid on
-    title("Spring Mass Damper Response of a Ball");
-    xlabel("Horizontal Position (m)")
-    ylabel("Vertical Position (m)")
-    vid = VideoWriter("MatlabIII_Pt1.avi");
-    fps = 60;
-    vid.FrameRate = fps;
-    vid.Quality = 85;
+    % figure();
+    % axis equal
+    % axis([-4*Ball.Radius 4*Ball.Radius -.1 , drop_height*1.2]);
+    % hold on
+    % grid on
+    % title("Spring Mass Damper Response of a Ball");
+    % xlabel("Horizontal Position (m)")
+    % ylabel("Vertical Position (m)")
+    % vid = VideoWriter("MatlabIII_Pt1.avi");
+    % fps = 60;
+    % vid.FrameRate = fps;
+    % vid.Quality = 85;
     % open(vid);
 
     % for i = 2:numel(Kinematics.Y_Position) %Ensures video is 10 seconds long
@@ -51,9 +51,12 @@ function draw_ball(Ball, Kinematics, drop_height)
     % close(vid);
     figure(); 
     plot(Kinematics.T, Kinematics.Y_Position)
-    title("Time Response of the Ball");
+    title("Time Response of the Variable Stiffness Ball");
     xlabel("Time (s)");
     ylabel("Vertical Position (m)");
+    grid on
+
+    fprintf("The original stiffness magnitude is %d N/m, and is changed to %d N/m after contact\n", 200, 700);
 end
 
 
