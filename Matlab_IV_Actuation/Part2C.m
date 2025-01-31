@@ -45,7 +45,7 @@ function draw_ball(Ball, Kinematics, drop_height)
     %     cla
     %     fill(Ball.X_Points, Ball.Y_Points + Kinematics.Y_Position(i), 'r');
     %     drawnow;
-    %     % writeVideo(vid, getframe(gcf));
+    %     writeVideo(vid, getframe(gcf));
     % end
 
     % close(vid);
@@ -194,18 +194,16 @@ function func = stance_no_motor_dynamics(t,y)
 end
 
 function func = stance_motor_dynamics(t,y)
-    % unfinished
 
-    transmission_ratio = 1;
+    transmission_ratio = 10000;
+    Z = 1/transmission_ratio; 
 
     km = -9550/.257; % slop of the speed-torque curve
+    t_stall = 0.257;
 
-    slope = (1/transmission_ratio)^2 * km; % slop of speed-force curve
-
-    % Force of the motor is gonna be dependent on speed, y(2)s
-
-
-
+    % By algebra based on the motor chart...
+    v = y(2);
+    Force = (v + Z*km*t_stall) / (Z^2 * km);
 
     g = 9.81;
     kp = 250;
@@ -213,8 +211,7 @@ function func = stance_motor_dynamics(t,y)
     m = .5;
     spring_natural_length = .02;
     L = spring_natural_length;
-    Force = 19;
-
+  
     y1 = y(1);
     y2 = y(2);
 
