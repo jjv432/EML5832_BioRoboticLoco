@@ -4,10 +4,24 @@ clc; clear; close all; format compact
 
 %}
 
+% Human Data
+scaling_factor = 0.30;
+
+HumanData.length = 1; %m
+HumanData.mass = 80; %kg
+HumanData.stiffness = 20000; %N/m
+HumanData.touchdown_angle = 1.2; %rad
+HumanData.stride_freq = 5; %hz
+HumanData.horiz_velo = 3; %m/s
+
+ScaledHuman = dynamic_scaler(HumanData, scaling_factor);
+ScaledHuman.Dampening = 3.8;
+
 drop_height = .10;
-Kinematics = ball_response(drop_height);
+Kinematics = ball_response(drop_height, ScaledHuman);
 Ball = create_ball(.02);
-draw_ball(Ball, Kinematics, drop_height);
+draw_ball(Kinematics, ScaledHuman);
+
 
 %% Functions
 
@@ -26,37 +40,18 @@ function Ball = create_ball(radius)
 
 end
 
-function draw_ball(Ball, Kinematics, drop_height)
-    % figure();
-    % axis equal
-    % axis([-4*Ball.Radius 4*Ball.Radius -.1 , drop_height*1.2]);
-    % hold on
-    % grid on
-    % title("Spring Mass Damper Response of a Ball");
-    % xlabel("Horizontal Position (m)")
-    % ylabel("Vertical Position (m)")
-    % vid = VideoWriter("MatlabIII_Pt1.avi");
-    % fps = 60;
-    % vid.FrameRate = fps;
-    % vid.Quality = 85;
-    % open(vid);
+function draw_ball(Kinematics, ScaledHuman)
 
-    % for i = 1:numel(Kinematics.Y_Position) %Ensures video is 10 seconds long
-    %     cla
-    %     fill(Ball.X_Points, Ball.Y_Points + Kinematics.Y_Position(i), 'r');
-    %     drawnow;
-    %     writeVideo(vid, getframe(gcf));
-    % end
-
-    % close(vid);
     figure();
     plot(Kinematics.T, Kinematics.Y_Position)
     title("Time Response of the Motor-Model Ball");
     xlabel("Time (s)");
     ylabel("Vertical Position (m)");
     grid on
+    % ylim([-.2 2]);
 
-    fprintf("The transmission ratio selected was %d, and the maximum hopping height was %.2f m\n", 655, 3.57);
+    fprintf("The transmission ratio selected was %d, and the maximum hopping height was %.2f m\n", 550, 5.98);
+    fprintf("This is not realistic because it requires the motor to be continuously operating outside of its continuous operating range and assumes no mechanical or electrical losses\n");
 
 end
 
@@ -65,7 +60,7 @@ end
 %%%%              STATE-BASED FUNCTION                 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function Kinematics = ball_response(initial_height)
+function Kinematics = ball_response(initial_height, Scaled)
 
     Kinematics.Y_Position = [];
 
@@ -83,7 +78,7 @@ function Kinematics = ball_response(initial_height)
     T = [];
 
     % Calculate the response for multiple bounces
-    for i = 1:25
+    for i = 1:50
 
         switch(state)
 
@@ -104,7 +99,7 @@ function Kinematics = ball_response(initial_height)
 
             case "stance_no_motor"
                 % Calculate the response
-                [T1, Y1] = ode45(@stance_no_motor_dynamics, time, init, no_motor_options);
+                [T1, Y1] = ode45(@(T1, Y1) stance_no_motor_dynamics(T1, Y1, Scaled), time, init, no_motor_options);
                 init = [Y1(end, 1), Y1(end, 2)];
                 T = [T; T1(1:end-1) + last_end_time];
                 last_end_time = max(T1) + last_end_time;
@@ -115,7 +110,7 @@ function Kinematics = ball_response(initial_height)
 
             case "stance_motor"
                 % Calculate the response
-                [T1, Y1] = ode45(@stance_motor_dynamics, time, init, motor_options);
+                [T1, Y1] = ode45(@(T1, Y1) stance_motor_dynamics(T1, Y1, Scaled), time, init, motor_options);
                 init = [Y1(end, 1), Y1(end, 2)];
                 T = [T; T1(1:end-1) + last_end_time];
                 last_end_time = max(T1) + last_end_time;
@@ -179,12 +174,13 @@ end
 
 % Dynamics of the system when it is acting as a mass-spring-damper
 % during stance
-function func = stance_no_motor_dynamics(t,y)
+function func = stance_no_motor_dynamics(t,y, ScaledHuman)
 
     g = 9.81;
-    kp = 250;
-    kd = 7;
-    m = .5;
+    m = ScaledHuman.mass;
+    kp = ScaledHuman.stiffness;
+    kd = ScaledHuman.Dampening;
+
     spring_natural_length =.02;
     L = spring_natural_length;
 
@@ -197,9 +193,9 @@ function func = stance_no_motor_dynamics(t,y)
     func = [y1p; y2p];
 end
 
-function func = stance_motor_dynamics(t,y)
+function func = stance_motor_dynamics(t,y, ScaledHuman)
 
-    transmission_ratio = 655;
+    transmission_ratio = 550;
     Z = 1/transmission_ratio;
 
     km = -9550/.257; % slop of the speed-torque curve
@@ -210,9 +206,10 @@ function func = stance_motor_dynamics(t,y)
     Force = (v + Z*km*t_stall) / (Z^2 * km);
 
     g = 9.81;
-    kp = 250;
-    kd = 7;
-    m = .5;
+    m = ScaledHuman.mass;
+    kp = ScaledHuman.stiffness;
+    kd = ScaledHuman.Dampening;
+
     spring_natural_length = .02;
     L = spring_natural_length;
 
@@ -225,3 +222,17 @@ function func = stance_motor_dynamics(t,y)
     func = [y1p; y2p];
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%           DYNAMIC SCALING FUNCTION                %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function scaled_struct = dynamic_scaler(input_struct, alpha_l)
+
+    scaled_struct.length = input_struct.length * alpha_l;
+    scaled_struct.mass = input_struct.mass * (alpha_l)^3;
+    scaled_struct.stiffness = input_struct.stiffness * (alpha_l)^2;
+    scaled_struct.touchdown_angle = input_struct.touchdown_angle;
+    scaled_struct.stride_freq = input_struct.stride_freq * (alpha_l)^(-1/2);
+    scaled_struct.horiz_velo = input_struct.horiz_velo * (alpha_l)^(1/2);
+
+end
