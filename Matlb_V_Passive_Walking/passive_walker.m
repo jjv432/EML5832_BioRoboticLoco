@@ -9,6 +9,8 @@ classdef passive_walker < handle
         leg_1_coords
         leg_2_coords
         gamma
+        X_Position = 0
+        Y_Position = 1;
     end
 
     methods
@@ -34,14 +36,16 @@ classdef passive_walker < handle
 
             theta = obj.Y(index, 1);
             phi = obj.Y(index, 3);
-            adjustment = pi + obj.gamma;
+            adjustment = -pi + obj.gamma;
             template_coords = [0 .1 .1 0; 0 0 1 1];
-           
+
             rot_matrix_1 = [cos(theta + adjustment), -sin(theta + adjustment); sin(theta + adjustment), cos(theta + adjustment)];
             rot_matrix_2 = [cos(phi + adjustment), -sin(phi + adjustment); sin(phi + adjustment), cos(phi + adjustment)];
 
             obj.leg_1_coords = rot_matrix_1 * template_coords;
             obj.leg_2_coords = rot_matrix_2 * template_coords;
+
+
 
         end
 
@@ -50,24 +54,42 @@ classdef passive_walker < handle
 
             ax = gca;
             axis equal
-            patch(obj.leg_1_coords(1, :), obj.leg_1_coords(2, :), 'r', 'Parent', ax);
-            patch(obj.leg_2_coords(1, :), obj.leg_2_coords(2, :), 'b', 'Parent', ax);
+            axis([obj.X_Position - 1, obj.X_Position + 1, -5, 5])
+            patch(obj.leg_1_coords(1, :) + obj.X_Position, obj.leg_1_coords(2, :) + obj.Y_Position, 'r', 'Parent', ax);
+            patch(obj.leg_2_coords(1, :) + obj.X_Position, obj.leg_2_coords(2, :) + obj.Y_Position, 'b', 'Parent', ax);
+            legend("Stance Leg", "Swing Leg")
+
+            adjustment = -pi + obj.gamma;
+            dx = obj.Y(index, 1);
+            dy = -dx*tan(obj.gamma);
+            obj.X_Position = obj.X_Position + dx;
+            obj.Y_Position = obj.Y_Position + dy;
+
 
         end
 
         function AnimateWalker(obj)
-            figure()
-            axis([-1 1 -1 1])
+
 
             for i = 1:numel(obj.T)
+                obj.MakeGround
                 obj.CreateCoordinates(i);
                 obj.DrawWalker(i)
                 pause(.1);
                 cla
             end
         end
-                
 
-        
+        function MakeGround(obj)
+            ax = gca;
+
+            x_distance = 2*(obj.X_Position + 1);
+
+            patch([-1000, 1000, 1000, -1000], [x_distance*tan(obj.gamma), 0, -10, -10], 'k')
+
+        end
+
+
+
     end
 end
