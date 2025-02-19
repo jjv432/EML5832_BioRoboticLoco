@@ -60,7 +60,7 @@ classdef passive_walker < handle
             legend("", "Stance Leg", "Swing Leg")
 
             adjustment = pi - obj.gamma;
-            dx = obj.Y(index, 1);
+            dx = obj.Y(index, 1) - obj.Y(index -1, 1);
             dy = -dx*tan(obj.gamma);
             obj.X_Position = obj.X_Position + dx;
             obj.Y_Position = obj.Y_Position + dy;
@@ -71,7 +71,7 @@ classdef passive_walker < handle
         function AnimateWalker(obj)
 
 
-            for i = 1:numel(obj.T)
+            for i = 2:numel(obj.T)
                 obj.MakeGround
                 obj.CreateCoordinates(i);
                 obj.DrawWalker(i)
