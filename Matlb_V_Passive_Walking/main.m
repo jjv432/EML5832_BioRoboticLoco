@@ -1,8 +1,8 @@
 clc; clear; close all; format compact
 
 init = [0.1995; -.199; .3991; -.0156];
-time = [0, 4];
-% time = [0 4];
+% time = [0, 1];
+time = [0 4];
 [T, Y] = ode45(@(T, Y) swing_stance_leg_dynamics(T, Y), time, init);
 figure()
 hold on
@@ -17,7 +17,7 @@ plot(T, Y(:, 3))
 
 function func = swing_stance_leg_dynamics(t, y)
 
-    g = 9.81;
+    % g = 9.81;
     g = 1;
     L = 1;
     gamma = 0.009;
