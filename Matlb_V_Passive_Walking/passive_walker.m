@@ -36,7 +36,7 @@ classdef passive_walker < handle
 
             theta = obj.Y(index, 1);
             phi = obj.Y(index, 3);
-            adjustment = -pi + obj.gamma;
+            adjustment = pi - obj.gamma;
             template_coords = [0 .1 .1 0; 0 0 1 1];
 
             rot_matrix_1 = [cos(theta + adjustment), -sin(theta + adjustment); sin(theta + adjustment), cos(theta + adjustment)];
@@ -57,9 +57,9 @@ classdef passive_walker < handle
             axis([obj.X_Position - 1, obj.X_Position + 1, -5, 5])
             patch(obj.leg_1_coords(1, :) + obj.X_Position, obj.leg_1_coords(2, :) + obj.Y_Position, 'r', 'Parent', ax);
             patch(obj.leg_2_coords(1, :) + obj.X_Position, obj.leg_2_coords(2, :) + obj.Y_Position, 'b', 'Parent', ax);
-            legend("Stance Leg", "Swing Leg")
+            legend("", "Stance Leg", "Swing Leg")
 
-            adjustment = -pi + obj.gamma;
+            adjustment = pi - obj.gamma;
             dx = obj.Y(index, 1);
             dy = -dx*tan(obj.gamma);
             obj.X_Position = obj.X_Position + dx;
