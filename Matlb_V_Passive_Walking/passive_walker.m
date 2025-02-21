@@ -31,12 +31,18 @@ classdef passive_walker < handle
             if isempty(obj.Y)
                 [T, Y] = ode45(@(T, Y) swing_stance_leg_dynamics(T, Y, gamma), time, obj.init_state, options);
             else
-                fprintf("In the Else");
                 [T, Y] = ode45(@(T, Y) swing_stance_leg_dynamics(T, Y, gamma), time + obj.T(end), [obj.Y(end, 1); obj.Y(end, 2); obj.Y(end, 3); obj.Y(end, 4)], options);
             end
 
+            
             obj.T = [obj.T; T];
             obj.Y = [obj.Y; Y];
+
+            % Reversing stance and swing legs
+            obj.Y(end, 1) = obj.Y(end, 3);
+            obj.Y(end, 2) = obj.Y(end, 4);
+            obj.Y(end, 3) = obj.Y(end, 1);
+            obj.Y(end, 4) = obj.Y(end, 2);
         end
 
         function CreateCoordinates(obj, index)

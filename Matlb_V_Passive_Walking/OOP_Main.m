@@ -8,18 +8,24 @@ gamma = 0.009;
 
 pw = passive_walker(init);
 
+%% Just Making the First Plot
+pw.GenerateDynamics(time, gamma, [])
+figure()
+hold on
+grid on
+plot(pw.T, pw.Y(:, 1))
+plot(pw.T, pw.Y(:, 3))
+xlabel("Time (s)")
+ylabel("Angle (rad)");
+legend("\theta", "\phi");
+title("\gamma 0.009 rad");
 
-
+%% Animating Motion
+% Doesn't work reliably- the event function is off
+close
 for i = 1:3
     pw.GenerateDynamics(time, gamma, walker_options)
     pw.AnimateWalker
 end
-
-
-
-figure()
-hold on
-plot(pw.T, pw.Y(:, 1))
-plot(pw.T, pw.Y(:, 3))
 
 
