@@ -5,16 +5,15 @@ format compact;
 
 params.l0 = 1;
 params.b = 0;
-params.k = 500;
+params.k = 50;
 params.g = 9.81;
 params.m = 10;
-params.t_hip = -100;
-% params.t_hip = 0; makes it bounce up and down ;)
-
-time = [0 inf];
+% params.t_hip = -100;
+params.t_hip = 50; 
+time = [0 30];
 
 % l, ldot, phi, phid
-phi_0 = pi/4;
+phi_0 = pi/6;
 init = [1; 0; phi_0; 0];
 
 stance_options = odeset('Events', @(t, y) stance_event_func(t,y,params));
@@ -76,7 +75,9 @@ end
 
 
 figure()
+axis equal
 plot(Kinematics.X,Kinematics.Z);
+
 
 
 
@@ -104,15 +105,15 @@ function func = stance_dynamics(t,y, params)
     func = [y(2); l_dd; y(4); phi_dd];
 end
 
-
+% l, ldot, phi, phid
 function [position,isterminal,direction] = stance_event_func(t,y, params)
 
     Fleg = params.k*(params.l0 - y(1)) - params.b*y(2);
 
-    % position = -pi/4 - y(3);
-    position = Fleg * cos(y(3)) + (params.t_hip/(y(1))) * sin(y(4));
+    % position = y(3);
+    position = Fleg * cos(y(3)) + (params.t_hip/(y(1))) * sin(y(3));
     isterminal = 1;  % Halt integration
-    direction = 0;   % Zero approached by decreasing values
+    direction = -1;   % Zero approached by decreasing values
 end
 
 
