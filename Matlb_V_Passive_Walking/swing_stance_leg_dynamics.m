@@ -14,16 +14,16 @@ function func = swing_stance_leg_dynamics(t, y, gamma)
 
             func = [theta_d; theta_dd; phi_d; phi_dd];
 
-            if (phi - 2*theta) == 0
-                tempy3 = y(3);
-                tempy4 = y(4);
-
-                y(3) = y(1);
-                y(4) = y(2);
-
-                y(1) = tempy3;
-                y(2) = tempy4;
-            end
+            % if (phi - 2*theta) == 0
+            %     tempy3 = y(3);
+            %     tempy4 = y(4);
+            % 
+            %     y(3) = y(1);
+            %     y(4) = y(2);
+            % 
+            %     y(1) = tempy3;
+            %     y(2) = tempy4;
+            % end
 
 
         end

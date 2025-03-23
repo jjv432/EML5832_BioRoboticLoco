@@ -28,21 +28,38 @@ classdef passive_walker < handle
             %   Detailed explanation goes here
             obj.gamma = gamma;
 
-            if isempty(obj.Y)
-                [T, Y] = ode45(@(T, Y) swing_stance_leg_dynamics(T, Y, gamma), time, obj.init_state, options);
-            else
-                [T, Y] = ode45(@(T, Y) swing_stance_leg_dynamics(T, Y, gamma), time + obj.T(end), [obj.Y(end, 1); obj.Y(end, 2); obj.Y(end, 3); obj.Y(end, 4)], options);
+
+            % if isempty(obj.Y)
+            %     [T, Y] = ode45(@(T, Y) swing_stance_leg_dynamics(T, Y, gamma), time, obj.init_state, options);
+            % else
+            %     [T, Y] = ode45(@(T, Y) swing_stance_leg_dynamics(T, Y, gamma), time + obj.T(end), [obj.Y(end, 1); obj.Y(end, 2); obj.Y(end, 3); obj.Y(end, 4)], options);
+            % end
+
+            numsteps = 7;
+
+            obj.Y = [];
+            obj.T = [];
+            initial_state = obj.init_state;
+            for i = 1:numsteps
+                [t, y] = ode45(@(T, Y) swing_stance_leg_dynamics(T, Y, gamma), time, initial_state, options);
+                H = [-1 0 0 0; 0 cos(2*y(end, 1)) 0 0; -2 0 0 0; 0, cos(2*y(end, 1))*(1-cos(2*y(end, 1))), 0, 1];
+                initial_state = H*y(end, :)';
+                obj.Y = [obj.Y; y];
+                obj.T = [obj.T; t + (i-1)*(time(2) - time(1))];
+
             end
 
-            
-            obj.T = [obj.T; T];
-            obj.Y = [obj.Y; Y];
+
+            % obj.T = [obj.T; T];
+            % obj.Y = [obj.Y; Y];
 
             % Reversing stance and swing legs
-            obj.Y(end, 1) = obj.Y(end, 3);
-            obj.Y(end, 2) = obj.Y(end, 4);
-            obj.Y(end, 3) = obj.Y(end, 1);
-            obj.Y(end, 4) = obj.Y(end, 2);
+            % obj.Y(end, 1) = obj.Y(end, 3);
+            % obj.Y(end, 2) = obj.Y(end, 4);
+            % obj.Y(end, 3) = obj.Y(end, 1);
+            % obj.Y(end, 4) = obj.Y(end, 2);
+
+            
         end
 
         function CreateCoordinates(obj, index)

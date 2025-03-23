@@ -3,7 +3,7 @@ clc; clear; close all
 walker_options = odeset('Events', @walker_event);
 
 init = [0.1995; -.199; .3991; -.0156];
-time = [0 4];
+time = [0 5];
 gamma = 0.009;
 
 pw = passive_walker(init);
@@ -19,13 +19,3 @@ xlabel("Time (s)")
 ylabel("Angle (rad)");
 legend("\theta", "\phi");
 title("\gamma 0.009 rad");
-
-%% Animating Motion
-% Doesn't work reliably- the event function is off
-close
-for i = 1:3
-    pw.GenerateDynamics(time, gamma, walker_options)
-    pw.AnimateWalker
-end
-
-
