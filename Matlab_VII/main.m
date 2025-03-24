@@ -5,15 +5,16 @@ format compact;
 
 params.l0 = 1;
 params.b = 0;
-params.k = 50;
+params.k = 5;
 params.g = 9.81;
 params.m = 10;
-% params.t_hip = -100;
-params.t_hip = 50; 
+params.t_hip = -100;
+% params.t_hip = 50; 
+% params.t_hip = 0; 
 time = [0 30];
 
 % l, ldot, phi, phid
-phi_0 = pi/6;
+phi_0 = -pi/4;
 init = [1; 0; phi_0; 0];
 
 stance_options = odeset('Events', @(t, y) stance_event_func(t,y,params));
@@ -57,6 +58,7 @@ for i = 1
 
         case 'flight'
 
+            disp("flight");
             [T1, Y1] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
             % init = [Y1(end, 1), Y1(end, 2)];
             init = [1; 0; pi/4; 0];
@@ -78,6 +80,8 @@ figure()
 axis equal
 plot(Kinematics.X,Kinematics.Z);
 
+figure()
+plot(T, Kinematics.Z);
 
 
 
