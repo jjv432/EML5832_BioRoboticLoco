@@ -58,7 +58,14 @@ for i = 1:4
             state = 'flight';
             % Y1(1:end-1, 3) = wrapTo2Pi(Y1(1:end-1, 3));
             % x_array = Y1(1:end-1, 1) .* sin(Y1(1:end-1, 3)) .* (-sign(Y1(1:end-1, 3)));
-            x_array = Y1(1:end-1, 1) .* sin(Y1(1:end-1, 3));
+
+            if ~isempty(Kinematics.X)
+                x_array = Y1(1:end-1, 1) .* sin(Y1(1:end-1, 3)) + Kinematics.X(end);
+            else
+                x_array = Y1(1:end-1, 1) .* sin(Y1(1:end-1, 3));
+            end
+
+            % x_array = Y1(1:end-1, 1) .* sin(Y1(1:end-1, 3));
             z_array = Y1(1:end-1, 1) .* cos(Y1(1:end-1, 3));
 
             Kinematics.X = [Kinematics.X; x_array]; % End of this one is beginning of the next one, values were duplicated before
@@ -69,8 +76,9 @@ for i = 1:4
 
             disp("flight");
             [T1, Y1] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
-            % init = [Y1(end, 1), Y1(end, 2)];
-            init = [1; 0; Y1(end, 5); Y1(end, 6)];
+
+            % init = [1; 0; Y1(end, 5); Y1(end, 6)];
+            init = [1; 0; -pi/6; 0];
             T = [T; T1(1:end-1) + last_end_time];
             last_end_time = max(T1) + last_end_time;
 
