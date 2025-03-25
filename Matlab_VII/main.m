@@ -77,13 +77,20 @@ for i = 1:4
             disp("flight");
             [T1, Y1] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
 
-            % init = [1; 0; Y1(end, 5); Y1(end, 6)];
-            init = [1; 0; -pi/6; 0];
+            init = [1; 0; Y1(end, 5); Y1(end, 6)];
+            % init = [1; 0; -pi/6; 0];
             T = [T; T1(1:end-1) + last_end_time];
             last_end_time = max(T1) + last_end_time;
 
+
+            if ~isempty(Kinematics.X)
+                x_array = Y1(1:end-1, 1) + Kinematics.X(end);
+            else
+                x_array = Y1(1:end-1, 1);
+            end
+
             state = 'stance';
-            Kinematics.X = [Kinematics.X; Y1(1:end-1, 1)]; % End of this one is beginning of the next one, values were duplicated before
+            Kinematics.X = [Kinematics.X; x_array]; % End of this one is beginning of the next one, values were duplicated before
             Kinematics.Z = [Kinematics.Z; Y1(1:end-1, 3)];
             clear T1 Y1
 
@@ -92,23 +99,23 @@ for i = 1:4
 end
 
 
-animateHopper(Kinematics);
+animateHopper(Kinematics, T);
 
-figure()
-axis equal
-plot(Kinematics.X,Kinematics.Z);
-title("Z v X")
-
-figure()
-plot(T, Kinematics.Z);
-title("Z");
-figure()
-plot(T, Kinematics.X);
-title("X");
+% figure()
+% axis equal
+% plot(Kinematics.X,Kinematics.Z);
+% title("Z v X")
+% 
+% figure()
+% plot(T, Kinematics.Z);
+% title("Z");
+% figure()
+% plot(T, Kinematics.X);
+% title("X");
 
 %% Animation
 
-function animateHopper(Kinematics)
+function animateHopper(Kinematics, T)
 
     X = Kinematics.X;
     Z = Kinematics.Z;
@@ -116,11 +123,11 @@ function animateHopper(Kinematics)
     hold on
     yline(0, 'k--');
     plot(0, 0, 'x', 'LineWidth', 3);
-    for i = 1:length(X)
+    for i = 2:length(X)
         h1 = plot(X(i), Z(i), 'rx', 'LineWidth',5);
         axis([-4 9 -4 9])
         axis equal
-        pause(.1);
+        pause(T(i) - T(i-1));
 
         delete(h1)
     end
