@@ -5,16 +5,16 @@ format compact;
 
 params.l0 = 1;
 params.b = 0;
-params.k = 50;
+params.k = 500;
 params.g = 9.81;
 params.m = 10;
-params.t_hip = -1000;
+params.t_hip = -100;
 % params.t_hip = 50;
 % params.t_hip = 0;
 time = [0 30];
 
 % l, ldot, phi, phid
-phi_0 = pi/4;
+phi_0 = -pi/6;
 init = [1; 0; phi_0; 0];
 
 stance_options = odeset('Events', @(t, y) stance_event_func(t,y,params));
@@ -37,6 +37,8 @@ for i = 1:2
 
             [T1, Y1] = ode45(@(T1, Y1) stance_dynamics(T1, Y1, params), time, init, stance_options);
 
+            Y1(:, 3) = wrapTo2Pi(Y1(:,3));
+            Y1(:, 3) = -sign(Y1(:,3));
             x = Y1(end, 1) * -sign(Y1(end, 3))*sin(Y1(end, 3));
             % x = Y1(end, 1) * sign(Y1(end, 3))*sin(Y1(end, 3));
             z = Y1(end, 1) * cos(Y1(end, 3));
@@ -50,9 +52,9 @@ for i = 1:2
             last_end_time = max(T1) + last_end_time;
 
             state = 'flight';
-            Y1(1:end-1, 3) = wrapTo2Pi(Y1(1:end-1, 3));
-            x_array = Y1(1:end-1, 1) .* sin(Y1(1:end-1, 3)) .* (-sign(Y1(1:end-1, 3)));
-            % x_array = Y1(1:end-1, 1) .* sin(Y1(1:end-1, 3)) .* (sign(Y1(1:end-1, 3)));
+            % Y1(1:end-1, 3) = wrapTo2Pi(Y1(1:end-1, 3));
+            % x_array = Y1(1:end-1, 1) .* sin(Y1(1:end-1, 3)) .* (-sign(Y1(1:end-1, 3)));
+            x_array = Y1(1:end-1, 1) .* sin(Y1(1:end-1, 3));
             z_array = Y1(1:end-1, 1) .* cos(Y1(1:end-1, 3));
 
             Kinematics.X = [Kinematics.X; x_array]; % End of this one is beginning of the next one, values were duplicated before
