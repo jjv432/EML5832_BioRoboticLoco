@@ -4,12 +4,14 @@ close all;
 format compact;
 
 params.l0 = 1;
-params.b = 0;
+params.b = 2;
 params.k = 100;
 params.g = 9.81;
 params.m = 1;
-params.t_hip = 0;
+params.t_hip = .276;
 params.phi_0 = -pi/6;
+params.phi_d_0 = 1.5;
+params.l_d_0 = -3.5;
 
 time = 0:.01:30;
 
@@ -25,9 +27,9 @@ last_end_time = 0;
 T = [];
 state = 'stance';
 
-init = [params.l0; -4; params.phi_0; 1.75];
+init = [params.l0; params.l_d_0; params.phi_0; params.phi_d_0];
 
-for i = 1:3
+for i = 1:200
 
     switch state
 
@@ -57,15 +59,17 @@ for i = 1:3
             x_d_vals = l_vals.*phi_d_vals.*sin(phi_vals) + l_d_vals.*sin(phi_vals);
             z_d_vals = l_vals.*phi_d_vals.*cos(phi_vals) + l_d_vals.*cos(phi_vals);
 
-            % Store the T, x, and z positions for plotting
-            
+            if i>1
+            x_vals = x_vals - x_vals(1);
+            end
 
+            % Store the T, x, and z positions for plotting
             Kinematics.X = [Kinematics.X; x_vals + x_offset];
             Kinematics.Z = [Kinematics.Z; z_vals];
             T = [T; T1 + t_offset];
 
             % Set 'state' and the init vector for the next state
-            init = [x_vals(end); x_d_vals(end); z_vals(end); z_d_vals(end)];
+            init = [x_vals(end) + x_offset; x_d_vals(end); z_vals(end); z_d_vals(end)];
             state = 'flight';
 
 
@@ -89,7 +93,7 @@ for i = 1:3
                 t_offset = 0;
             end
 
-            Kinematics.X = [Kinematics.X; x_vals  + x_offset];
+            Kinematics.X = [Kinematics.X; x_vals];
             Kinematics.Z = [Kinematics.Z; z_vals];
             T = [T; T1 + t_offset];
 
@@ -103,7 +107,7 @@ for i = 1:3
             
             l_d0 = vz * cos(phi) + vx * sin(phi);
             phi_d0 = l0*(vz*sin(phi) + vx*cos(phi));
-            init = [l0; l_d0; phi; 1.75];
+            init = [l0; l_d0; phi; params.phi_d_0];
             state = 'stance';
 
 
@@ -112,7 +116,7 @@ for i = 1:3
 end
 
 
-animateHopper(Kinematics, T);
+% animateHopper(Kinematics, T);
 
 figure()
 axis equal
