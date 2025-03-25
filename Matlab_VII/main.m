@@ -11,7 +11,7 @@ params.m = 10;
 params.t_hip = 1000;
 % params.t_hip = 50;
 % params.t_hip = 0;
-time = [0 30];
+time = 0:.01:30;
 
 % l, ldot, phi, phid
 phi_0 = -pi/6;
@@ -120,6 +120,7 @@ function animateHopper(Kinematics, T)
     X = Kinematics.X;
     Z = Kinematics.Z;
     figure();
+    grid on
     hold on
     yline(0, 'k--');
     plot(0, 0, 'x', 'LineWidth', 3);
