@@ -7,32 +7,35 @@ function animateHopper(Kinematics, T)
     Z = Kinematics.Z;
     Phi = Kinematics.Phi;
 
-    cur_x_sum = 0;
-    x_sum = 0;
-    iter = 0;
+
+    stance_bools = T(:, 2);
+    stance_x_vals = X .* stance_bools;
+
     mean_x_vector = [];
+    
+    last_stance_bool = 1;
+    cur_sum = 0;
+    num = 0;
 
-    flip_bool = 1;
-    for i = 1:length(X)
+    for i = 1:numel(stance_x_vals)
 
-        if T(i, 2)
-            flip_bool = 1;
-            x_sum = cur_x_sum + Kinematics.X(i);
-            iter = iter + 1;
-        else
-            if flip_bool
-                cur_mean = x_sum/iter;
-                mean_x_vector = [mean_x_vector; cur_mean];
-                cur_x_sum = 0;
-                x_sum = 0;
-                iter = 0;
-            end
-            flip_bool = 0;
+        stance_bool = stance_x_vals(i) ~= 0;
+
+        if stance_bool
+            cur_sum = cur_sum + stance_x_vals(i);
+            num = num + 1;
+
+        elseif stance_bool == 0 && last_stance_bool == 1
+            cur_mean = cur_sum/num;
+            mean_x_vector = [mean_x_vector; cur_mean];
+            cur_mean = 0;
+            cur_sum = 0;
+            num = 0;
         end
 
+        last_stance_bool = stance_bool;
 
     end
-
 
 
     figure();
@@ -40,11 +43,16 @@ function animateHopper(Kinematics, T)
     hold on
     yline(0, 'k--');
     plot(0, 0, 'x', 'LineWidth', 3);
-    stance_iter = 1;
+    stance_iter = 0;
+    transition = 1;
     persistent stance_x_start;
     for i = 2:length(X)
 
         if T(i, 2)
+            if transition == 1
+                stance_iter = stance_iter + 1;
+            end
+
             h1 = plot(X(i), Z(i), 'rx', 'LineWidth',5);
             theta = pi/2 - Phi(i);
             rot_matrix = [cos(theta), -sin(theta); sin(theta), cos(theta)];
@@ -57,8 +65,10 @@ function animateHopper(Kinematics, T)
             end
 
             h2 = fill(x_coords + stance_x_start, y_coords, 'g');
+
+            transition = 0;
         else
-            stance_iter = stance_iter + 1;
+            transition = 1;
             stance_x_start = [];
             h1 = plot(X(i), Z(i), 'kx', 'LineWidth',5);
             h2 = [];
