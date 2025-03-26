@@ -1,20 +1,30 @@
+% Slip Simulation and Animation
+% Ryan Kaczmarczyk, Jack Vranicar, and Shane Rober
+% 2025-03-24 CE
+
 clc;
 clear;
 close all;
 format compact;
 
-params.l0 = 1;
-params.b = 2;
-params.k = 100;
+% Show Animation?
+animate = 0;
+
+% Parameters
+params.l0 = 1;  %* m
+params.b = 2;  %*
+params.k = 100; %*
 params.g = 9.81;
-params.m = 1;
-params.t_hip = .276;
-params.phi_0 = -pi/6;
+params.m = 1;  %*
+params.t_hip = .276;  %*
+params.phi_0 = -pi/6;  %*
 params.phi_d_0 = 1.5;
 params.l_d_0 = -3.5;
 
-time = 0:.01:30;
+% Time Vector for ODE45
+time = 0:.1:30;
 
+% Ending Conditions for ODE45
 stance_options = odeset('Events', @(t, y) stance_event_func(t,y,params));
 flight_options = odeset('Events', @(t, y) flight_event_func(t,y,params));
 
@@ -29,7 +39,7 @@ state = 'stance';
 
 init = [params.l0; params.l_d_0; params.phi_0; params.phi_d_0];
 
-for i = 1:200
+for i = 1:20
 
     switch state
 
@@ -115,13 +125,16 @@ for i = 1:200
 
 end
 
-
-% animateHopper(Kinematics, T);
+if animate == 1
+animateHopper(Kinematics, T);
+end
 
 figure()
 axis equal
 plot(Kinematics.X,Kinematics.Z);
-title("Z v X")
+xlabel("x-position, m")
+ylabel("z-position, m")
+title("SLIP-Model Position")
 %
 % figure()
 % plot(T, Kinematics.Z);
@@ -145,6 +158,10 @@ function animateHopper(Kinematics, T)
         h1 = plot(X(i), Z(i), 'rx', 'LineWidth',5);
         axis([-4 9 -4 9])
         axis equal
+        xlabel("x-position, m")
+        ylabel("z-position, m")
+        legend("Ground","Origin", "Center of Mass")
+        title("SLIP-Model Position")
         pause(T(i) - T(i-1));
 
         delete(h1)
