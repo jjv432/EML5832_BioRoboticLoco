@@ -17,7 +17,7 @@ function animateHopper(Kinematics, T)
     
     last_stance_bool = 1;
     cur_sum = 0;
-    num = 0;
+    num = 1;
 
     for i = 1:numel(stance_x_vals)
 
@@ -58,7 +58,7 @@ function animateHopper(Kinematics, T)
             h1 = plot(X(i), Z(i), 'rx', 'LineWidth',5);
             theta = pi/2 - Phi(i);
             rot_matrix = [cos(theta), -sin(theta); sin(theta), cos(theta)];
-            coords = rot_matrix * leg_coordinates.*[1; L(i)];
+            coords = rot_matrix * (leg_coordinates.*[L(i); 1]);
             x_coords= coords(1, :);
             y_coords = coords(2, :);
 

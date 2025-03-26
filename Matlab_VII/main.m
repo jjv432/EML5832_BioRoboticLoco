@@ -79,11 +79,11 @@ for i = 1:20
             end
 
             % Store the T, x, and z positions for plotting
-            Kinematics.X = [Kinematics.X; x_vals + x_offset];
-            Kinematics.Z = [Kinematics.Z; z_vals];
-            Kinematics.Phi = [Kinematics.Phi; phi_vals];
-            Kinematics.L = [Kinematics.L; l_vals];
-            T = [T; T1 + t_offset, boolean(ones(size(T1)))];
+            Kinematics.X = [Kinematics.X; x_vals(1:end-1) + x_offset];
+            Kinematics.Z = [Kinematics.Z; z_vals(1:end-1)];
+            Kinematics.Phi = [Kinematics.Phi; phi_vals(1:end-1)];
+            Kinematics.L = [Kinematics.L; l_vals(1:end-1)];
+            T = [T; T1(1:end-1) + t_offset, ones(numel(T1)-1, 1)];
 
             % Set 'state' and the init vector for the next state
             init = [x_vals(end) + x_offset; x_d_vals(end); z_vals(end); z_d_vals(end)];
@@ -110,11 +110,11 @@ for i = 1:20
                 t_offset = 0;
             end
 
-            Kinematics.X = [Kinematics.X; x_vals];
-            Kinematics.Z = [Kinematics.Z; z_vals];
-            Kinematics.Phi = [Kinematics.Phi; zeros(size(x_vals))];
-            Kinematics.L = [Kinematics.L; zeros(size(x_vals))];
-            T = [T; T1 + t_offset, zeros(size(T1))];
+            Kinematics.X = [Kinematics.X; x_vals(1:end-1)];
+            Kinematics.Z = [Kinematics.Z; z_vals(1:end-1)];
+            Kinematics.Phi = [Kinematics.Phi; zeros(numel(x_vals) - 1, 1)];
+            Kinematics.L = [Kinematics.L; zeros(numel(x_vals) - 1, 1)];
+            T = [T; T1(1:end-1) + t_offset, zeros(numel(T1)-1, 1)];
 
             % Set 'state' and the init vector for the next state
             % phi = tan(z_vals(end)/ x_vals(end));
