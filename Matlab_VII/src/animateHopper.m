@@ -6,6 +6,8 @@ function animateHopper(Kinematics, T)
     X = Kinematics.X;
     Z = Kinematics.Z;
     Phi = Kinematics.Phi;
+    L = Kinematics.L;
+
 
 
     stance_bools = T(:, 2);
@@ -56,7 +58,7 @@ function animateHopper(Kinematics, T)
             h1 = plot(X(i), Z(i), 'rx', 'LineWidth',5);
             theta = pi/2 - Phi(i);
             rot_matrix = [cos(theta), -sin(theta); sin(theta), cos(theta)];
-            coords = rot_matrix * leg_coordinates;
+            coords = rot_matrix * leg_coordinates.*[1; L(i)];
             x_coords= coords(1, :);
             y_coords = coords(2, :);
 
