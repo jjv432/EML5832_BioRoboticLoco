@@ -35,6 +35,7 @@ flight_options = odeset('Events', @(t, y) flight_event_func(t,y,params));
 %% ODE45 Call
 Kinematics.X = [];
 Kinematics.Z = [];
+Kinematics.Phi = [];
 last_end_time = 0;
 
 T = [];
@@ -79,6 +80,7 @@ for i = 1:20
             % Store the T, x, and z positions for plotting
             Kinematics.X = [Kinematics.X; x_vals + x_offset];
             Kinematics.Z = [Kinematics.Z; z_vals];
+            Kinematics.Phi = [Kinematics.Phi; phi_vals];
             T = [T; T1 + t_offset, boolean(ones(size(T1)))];
 
             % Set 'state' and the init vector for the next state
@@ -108,6 +110,7 @@ for i = 1:20
 
             Kinematics.X = [Kinematics.X; x_vals];
             Kinematics.Z = [Kinematics.Z; z_vals];
+            Kinematics.Phi = [Kinematics.Phi; zeros(size(x_vals))];
             T = [T; T1 + t_offset, zeros(size(T1))];
 
             % Set 'state' and the init vector for the next state
