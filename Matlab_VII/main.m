@@ -11,7 +11,7 @@ format compact;
 addpath("src");
 
 % Show Animation?
-animate = 0;
+animate = 1;
 
 % Parameters
 params.l0 = 1;  %* m
@@ -56,7 +56,7 @@ for i = 1:20
             l_d_vals = Y1(:, 2);
             phi_vals = Y1(:, 3);
             phi_d_vals = Y1(:, 4);
-            
+
             % Offset values
             if ~isempty(Kinematics.X)
                 x_offset = Kinematics.X(end);
@@ -73,7 +73,7 @@ for i = 1:20
             z_d_vals = l_vals.*phi_d_vals.*cos(phi_vals) + l_d_vals.*cos(phi_vals);
 
             if i>1
-            x_vals = x_vals - x_vals(1);
+                x_vals = x_vals - x_vals(1);
             end
 
             % Store the T, x, and z positions for plotting
@@ -117,7 +117,7 @@ for i = 1:20
             l0 = params.l0;
             vx = x_d_vals(end);
             vz = z_d_vals(end);
-            
+
             l_d0 = vz * cos(phi) + vx * sin(phi);
             phi_d0 = l0*(vz*sin(phi) + vx*cos(phi));
             init = [l0; l_d0; phi; params.phi_d_0];
@@ -129,7 +129,7 @@ for i = 1:20
 end
 
 if animate == 1
-animateHopper(Kinematics, T);
+    animateHopper(Kinematics, T);
 end
 
 figure()
@@ -138,12 +138,3 @@ plot(Kinematics.X,Kinematics.Z);
 xlabel("x-position, m")
 ylabel("z-position, m")
 title("SLIP-Model Position")
-%
-% figure()
-% plot(T, Kinematics.Z);
-% title("Z");
-% figure()
-% plot(T, Kinematics.X);
-% title("X");
-
-

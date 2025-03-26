@@ -8,7 +8,12 @@ function animateHopper(Kinematics, T)
     yline(0, 'k--');
     plot(0, 0, 'x', 'LineWidth', 3);
     for i = 2:length(X)
-        h1 = plot(X(i), Z(i), 'rx', 'LineWidth',5);
+
+        if T(i, 2)
+            h1 = plot(X(i), Z(i), 'rx', 'LineWidth',5);
+        else
+            h1 = plot(X(i), Z(i), 'kx', 'LineWidth',5);
+        end
         axis([-4 9 -4 9])
         axis equal
         xlabel("x-position, m")
