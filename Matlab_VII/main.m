@@ -7,6 +7,9 @@ clear;
 close all;
 format compact;
 
+% Add functions in
+addpath("src");
+
 % Show Animation?
 animate = 0;
 
@@ -143,117 +146,4 @@ title("SLIP-Model Position")
 % plot(T, Kinematics.X);
 % title("X");
 
-%% Animation
 
-function animateHopper(Kinematics, T)
-
-    X = Kinematics.X;
-    Z = Kinematics.Z;
-    figure();
-    grid on
-    hold on
-    yline(0, 'k--');
-    plot(0, 0, 'x', 'LineWidth', 3);
-    for i = 2:length(X)
-        h1 = plot(X(i), Z(i), 'rx', 'LineWidth',5);
-        axis([-4 9 -4 9])
-        axis equal
-        xlabel("x-position, m")
-        ylabel("z-position, m")
-        legend("Ground","Origin", "Center of Mass")
-        title("SLIP-Model Position")
-        pause(T(i) - T(i-1));
-
-        delete(h1)
-    end
-
-
-end
-
-
-%% Dynamics Functions
-function func = stance_dynamics(t,y, params)
-
-    persistent b m k l0 g t_hip
-    if isempty(b)
-        b = params.b;
-        k = params.k;
-        m = params.m;
-        l0 = params.l0;
-        g = params.g;
-        t_hip = params.t_hip;
-    end
-
-    l = y(1);
-    l_d = y(2);
-    phi = y(3);
-    phi_d = y(4);
-
-    l_dd = l*phi_d^2 - g*cos(phi) - (k/m)*(l - l0) - (b/m)*l_d;
-    phi_dd = (1/l)*(-2*l_d*phi_d) + (1/l)*(g*sin(phi)) + t_hip/(m*l^2);
-
-    func = [l_d; l_dd; phi_d; phi_dd];
-
-end
-
-
-
-function func = flight_dynamics(t, y, params)
-
-    persistent g
-    if isempty(g)
-        g = params.g;
-    end
-
-    x = y(1);
-    x_d = y(2);
-    z = y(3);
-    z_d = y(4);
-
-    x_dd = 0;
-    z_dd = -g;
-
-    func = [x_d; x_dd; z_d; z_dd];
-
-end
-
-
-%% Event Funcs
-
-function [position,isterminal,direction] = flight_event_func(t,y, params)
-
-    % Assuming that the leg 'snaps' to l = l0, phi = phi0
-    persistent phi0 l0
-    if isempty(phi0)
-        phi0 = params.phi_0;
-        l0 = params.l0;
-    end
-
-    z = y(3);
-
-    position = l0*cos(phi0) - z;
-    isterminal = 1;  % Halt integration
-    direction = 1;   % Zero approached by decreasing values
-end
-
-function [position,isterminal,direction] = stance_event_func(t,y, params)
-
-    persistent k l0 b t_hip
-    if isempty(k)
-        k = params.k;
-        l0 = params.l0;
-        b = params.b;
-        t_hip = params.t_hip;
-    end
-
-    l = y(1);
-    l_d = y(2);
-    phi = y(3);
-    phi_d = y(4);
-
-    Fleg = k*(l0 - l) - b*l_d;
-
-    position = Fleg*cos(phi) + (1/l)*t_hip*sin(phi);
-    isterminal = 1;
-    direction = -1;
-end
