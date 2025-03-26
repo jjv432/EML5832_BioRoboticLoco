@@ -79,7 +79,7 @@ for i = 1:20
             % Store the T, x, and z positions for plotting
             Kinematics.X = [Kinematics.X; x_vals + x_offset];
             Kinematics.Z = [Kinematics.Z; z_vals];
-            T = [T; T1 + t_offset];
+            T = [T; T1 + t_offset, boolean(ones(size(T1)))];
 
             % Set 'state' and the init vector for the next state
             init = [x_vals(end) + x_offset; x_d_vals(end); z_vals(end); z_d_vals(end)];
@@ -108,7 +108,7 @@ for i = 1:20
 
             Kinematics.X = [Kinematics.X; x_vals];
             Kinematics.Z = [Kinematics.Z; z_vals];
-            T = [T; T1 + t_offset];
+            T = [T; T1 + t_offset, zeros(size(T1))];
 
             % Set 'state' and the init vector for the next state
             % phi = tan(z_vals(end)/ x_vals(end));
