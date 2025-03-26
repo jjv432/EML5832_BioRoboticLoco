@@ -1,5 +1,10 @@
 function animateHopper(Kinematics, T)
 
+    %{
+mean_x_vector is producing the correct values (checked against
+stance_x_vals). Something about the animation
+    %}
+
     leg_coordinates = [0 1 1 0; -.05 -.05 .05 .05];
 
 
@@ -17,7 +22,7 @@ function animateHopper(Kinematics, T)
     
     last_stance_bool = 1;
     cur_sum = 0;
-    num = 1;
+    num = 0;
 
     for i = 1:numel(stance_x_vals)
 
@@ -28,7 +33,7 @@ function animateHopper(Kinematics, T)
             num = num + 1;
 
         elseif stance_bool == 0 && last_stance_bool == 1
-            cur_mean = cur_sum/num;
+            cur_mean = cur_sum/(num);
             mean_x_vector = [mean_x_vector; cur_mean];
             cur_mean = 0;
             cur_sum = 0;
