@@ -13,8 +13,6 @@ stance_x_vals). Something about the animation
     Phi = Kinematics.Phi;
     L = Kinematics.L;
 
-
-
     stance_bools = T(:, 2);
     stance_x_vals = X .* stance_bools;
 
@@ -60,7 +58,7 @@ stance_x_vals). Something about the animation
                 stance_iter = stance_iter + 1;
             end
 
-            h1 = plot(X(i), Z(i), 'rx', 'LineWidth',5);
+            h1 = plot(X(i), Z(i), 'ro', 'LineWidth',5);
             theta = pi/2 - Phi(i);
             rot_matrix = [cos(theta), -sin(theta); sin(theta), cos(theta)];
             coords = rot_matrix * (leg_coordinates.*[L(i); 1]);
@@ -71,13 +69,13 @@ stance_x_vals). Something about the animation
                 stance_x_start = mean_x_vector(stance_iter);
             end
 
-            h2 = fill(x_coords + stance_x_start, y_coords, 'g');
+            h2 = fill(x_coords + stance_x_start + .175, y_coords, 'g');
 
             transition = 0;
         else
             transition = 1;
             stance_x_start = [];
-            h1 = plot(X(i), Z(i), 'kx', 'LineWidth',5);
+            h1 = plot(X(i), Z(i), 'ko', 'LineWidth',5);
             h2 = [];
         end
 
