@@ -5,7 +5,8 @@ mean_x_vector is producing the correct values (checked against
 stance_x_vals). Something about the animation
     %}
 
-    leg_coordinates = [0 1 1 0; -.05 -.05 .05 .05];
+    leg_width = .05;
+    leg_coordinates = [0 1 1 0; -leg_width/2 -leg_width/2 leg_width/2 leg_width/2];
 
 
     X = Kinematics.X;
@@ -80,7 +81,7 @@ stance_x_vals). Something about the animation
         end
 
 
-        axis([-1 9 -1 9])
+        axis([X(i)-4, X(i)+4, -1, 3])
         axis equal
         xlabel("x-position, m")
         ylabel("z-position, m")
