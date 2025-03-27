@@ -73,6 +73,7 @@ function [Kinematics, T, apexHeight] = simulateSystem(params, time, init_apex_bo
 
                 [T1, Y1, te, ye, ie] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
 
+
                 curApexheight = ye(1, 3);
 
                 if init_apex_bool && flight_counter == 1
