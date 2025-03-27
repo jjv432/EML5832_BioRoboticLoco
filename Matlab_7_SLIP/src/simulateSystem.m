@@ -1,9 +1,10 @@
-function [Kinematics, T] = simulateSystem(params, time)
+function [Kinematics, T, apexHeight] = simulateSystem(params, time, init_apex_bool)
 
 
     % Ending Conditions for ODE45
     stance_options = odeset('Events', @(t, y) stance_event_func(t,y,params));
     flight_options = odeset('Events', @(t, y) flight_event_func(t,y,params));
+    % flight_options = [flight_options ; odeset('Events', @(t,y) flight_apex_event_func(t, y, params))];
 
     %% ODE45 Call
     Kinematics.X = [];
@@ -16,6 +17,9 @@ function [Kinematics, T] = simulateSystem(params, time)
     state = 'stance';
 
     init = [params.l0; params.l_d_0; params.phi_0; params.phi_d_0];
+
+    % Newton-Rhapson vars
+    flight_counter = 0;
 
     for i = 1:20
 
@@ -61,12 +65,22 @@ function [Kinematics, T] = simulateSystem(params, time)
                 % Set 'state' and the init vector for the next state
                 init = [x_vals(end) + x_offset; x_d_vals(end); z_vals(end); z_d_vals(end)];
                 state = 'flight';
+                flight_counter = flight_counter + 1;
 
 
 
             case 'flight'
 
-                [T1, Y1] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
+                [T1, Y1, te, ye, ie] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
+
+                curApexheight = ye(1, 3);
+
+                if init_apex_bool && flight_counter == 1
+                    apexHeight = curApexheight;
+                elseif ~init_apex_bool && flight_counter == 2
+                    apexHeight = curApexheight;
+                end
+
 
                 % Parse out the results
                 x_vals = Y1(:, 1);

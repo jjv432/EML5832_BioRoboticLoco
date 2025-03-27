@@ -13,13 +13,17 @@ addpath("src");
 % Show Animation?
 animate = 1;
 
-
-
 params = getParams();
+
 % Time Vector for ODE45
 time = 0:.1:30;
 
-[Kinematics, T] = simulateSystem(params, time);
+% apexHeight: 1.5611 if 1, 1.560 if 0
+isInit = 0;
+
+[Kinematics, T, apex] = simulateSystem(params, time, isInit);
+
+apex
 
 if animate == 1
     animateHopper(Kinematics, T);
