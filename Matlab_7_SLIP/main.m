@@ -78,6 +78,21 @@ x1
 [Kinematics, T, nr_results] = simulateSystem(params, time, 0, x1);
 
 
+%% Stability
+x0 = x1;
+
+for i = 1:numel(x0)
+    x0(i) = x0(i) + del;
+    [~, ~,R1] = simulateSystem(params, time, 1, x0);
+    x0(i) = x0(i) - 2*del;
+    [~, ~,R2] = simulateSystem(params, time, 1, x0);
+    slope(:, i) = (R1 - R2)/(2*del);
+    x0(i) = x0(i) + del;
+end
+
+MaxEig = max(eig(slope))
+
+
 %% Animation
 if animate == 1
     animateHopper(Kinematics, T);
