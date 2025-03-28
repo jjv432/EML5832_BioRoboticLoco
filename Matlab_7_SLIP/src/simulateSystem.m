@@ -1,4 +1,4 @@
-function [Kinematics, T, apexHeight] = simulateSystem(params, time, init_apex_bool)
+function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, init)
 
 
     % Ending Conditions for ODE45
@@ -16,12 +16,19 @@ function [Kinematics, T, apexHeight] = simulateSystem(params, time, init_apex_bo
     T = [];
     state = 'stance';
 
-    init = [params.l0; params.l_d_0; params.phi_0; params.phi_d_0];
+    % init = [params.l0; params.l_d_0; params.phi_0; params.phi_d_0];
 
     % Newton-Rhapson vars
     flight_counter = 0;
 
-    for i = 1:20
+    % If you're running newton rhapson, only run each state once
+    if nr_bool
+        duration = 2;
+    else
+        duration = 20;
+    end
+
+    for i = 1:duration
 
         switch state
 
@@ -73,16 +80,6 @@ function [Kinematics, T, apexHeight] = simulateSystem(params, time, init_apex_bo
 
                 [T1, Y1, te, ye, ie] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
 
-
-                curApexheight = ye(1, 3);
-
-                if init_apex_bool && flight_counter == 1
-                    apexHeight = curApexheight;
-                elseif ~init_apex_bool && flight_counter == 2
-                    apexHeight = curApexheight;
-                end
-
-
                 % Parse out the results
                 x_vals = Y1(:, 1);
                 x_d_vals = Y1(:, 2);
@@ -122,5 +119,10 @@ function [Kinematics, T, apexHeight] = simulateSystem(params, time, init_apex_bo
 
     end
 
+    if duration == 2
+        nr_results = init;
+    else
+        nr_results = [];
+    end
 
 end
