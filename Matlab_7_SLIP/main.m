@@ -1,6 +1,5 @@
 % Slip Simulation and Animation
 % Ryan Kaczmarczyk, Jack Vranicar, and Shane Rober
-% 2025-03-24 CE
 
 clc;
 clear;
@@ -13,134 +12,103 @@ addpath("src");
 % Show Animation?
 animate = 1;
 
-% Parameters
-params.l0 = 1;  %* m
-params.b = 2;  %*
-params.k = 100; %*
-params.g = 9.81;
-params.m = 1;  %*
-params.t_hip = .276;  %*
-params.phi_0 = -pi/6;  %*
-params.phi_d_0 = 1.5;
-params.l_d_0 = -3.5;
+params = getParams();
 
 % Time Vector for ODE45
 time = 0:.1:30;
 
-% Ending Conditions for ODE45
-stance_options = odeset('Events', @(t, y) stance_event_func(t,y,params));
-flight_options = odeset('Events', @(t, y) flight_event_func(t,y,params));
+%% Newton-Rhapson
 
+iter = 0;
+stallIterations = 0;
+tol = 1e-6;
+del = 1e-5;
+nr_max_iter = 200;
 
-%% ODE45 Call
-Kinematics.X = [];
-Kinematics.Z = [];
-Kinematics.Phi = [];
-Kinematics.L = [];
-last_end_time = 0;
+x0 =[params.l0; params.l_d_0; params.phi_0; params.phi_d_0]; % this was our initial 
 
-T = [];
-state = 'stance';
+%{
+We're comparing the initial stance parameters, so the simulation needs to
+return the same parameters after the next heel strike occurs. Going to
+abandon the idea of comparing the flight stances for now.
+%}
 
-init = [params.l0; params.l_d_0; params.phi_0; params.phi_d_0];
+[~, ~, R] = simulateSystem(params, time, 1, x0);
+E = R - x0;
+Error = norm(E);
 
-for i = 1:20
+while (Error > tol) && (stallIterations < nr_max_iter)
 
-    switch state
+    for i = 1:numel(x0)
+        x0(i) = x0(i) + del;
+        [~, ~,R1] = simulateSystem(params, time, 1, x0);
 
-        case 'stance'
+        x0(i) = x0(i) -2*del;
+        [~, ~,R2] = simulateSystem(params, time, 1, x0);
 
-            % Run the stance simulation
-            [T1, Y1] = ode45(@(T1, Y1) stance_dynamics(T1, Y1, params), time, init, stance_options);
+        E2 = R2 - (x0);
 
-            % Parse out the results
-            l_vals = Y1(:, 1);
-            l_d_vals = Y1(:, 2);
-            phi_vals = Y1(:, 3);
-            phi_d_vals = Y1(:, 4);
-
-            % Offset values
-            if ~isempty(Kinematics.X)
-                x_offset = Kinematics.X(end);
-                t_offset = T(end);
-            else
-                x_offset = 0;
-                t_offset = 0;
-            end
-
-            % Solve for x and z positions and velocities
-            x_vals = l_vals .* sin(phi_vals);
-            z_vals = l_vals .* cos(phi_vals);
-            x_d_vals = l_vals.*phi_d_vals.*sin(phi_vals) + l_d_vals.*sin(phi_vals);
-            z_d_vals = l_vals.*phi_d_vals.*cos(phi_vals) + l_d_vals.*cos(phi_vals);
-
-            if i>1
-                x_vals = x_vals - x_vals(1);
-            end
-
-            % Store the T, x, and z positions for plotting
-            Kinematics.X = [Kinematics.X; x_vals(1:end-1) + x_offset];
-            Kinematics.Z = [Kinematics.Z; z_vals(1:end-1)];
-            Kinematics.Phi = [Kinematics.Phi; phi_vals(1:end-1)];
-            Kinematics.L = [Kinematics.L; l_vals(1:end-1)];
-            T = [T; T1(1:end-1) + t_offset, ones(numel(T1)-1, 1)];
-
-            % Set 'state' and the init vector for the next state
-            init = [x_vals(end) + x_offset; x_d_vals(end); z_vals(end); z_d_vals(end)];
-            state = 'flight';
-
-
-
-        case 'flight'
-
-            [T1, Y1] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
-
-            % Parse out the results
-            x_vals = Y1(:, 1);
-            x_d_vals = Y1(:, 2);
-            z_vals = Y1(:, 3);
-            z_d_vals = Y1(:, 4);
-
-            % Store the T, x, and z positions for plotting
-            if ~isempty(Kinematics.X)
-                x_offset = Kinematics.X(end);
-                t_offset = T(end);
-            else
-                x_offset = 0;
-                t_offset = 0;
-            end
-
-            Kinematics.X = [Kinematics.X; x_vals(1:end-1)];
-            Kinematics.Z = [Kinematics.Z; z_vals(1:end-1)];
-            Kinematics.Phi = [Kinematics.Phi; zeros(numel(x_vals) - 1, 1)];
-            Kinematics.L = [Kinematics.L; zeros(numel(x_vals) - 1, 1)];
-            T = [T; T1(1:end-1) + t_offset, zeros(numel(T1)-1, 1)];
-
-            % Set 'state' and the init vector for the next state
-            % phi = tan(z_vals(end)/ x_vals(end));
-            phi = params.phi_0;
-
-            l0 = params.l0;
-            vx = x_d_vals(end);
-            vz = z_d_vals(end);
-
-            l_d0 = vz * cos(phi) + vx * sin(phi);
-            phi_d0 = l0*(vz*sin(phi) + vx*cos(phi));
-            init = [l0; l_d0; phi; params.phi_d_0];
-            state = 'stance';
-
-
+        x0(i) = x0(i) + 2*del;
+        E1 = R1 - (x0 + del);
+        
+        [~, ~, tmp] = simulateSystem(params, time, 1, x0);
+        Ex0 =  tmp - x0;
+        slope(:, i) = (E1 - E2) / (2 * del);
+        x0(i) = x0(i) - del;
     end
+    x1 = x0 - (slope^-1) * Ex0;
 
+    [~, ~, tmp] = simulateSystem(params, time, 1, x1);
+    new_error = norm(tmp - x1);
+    if new_error < Error
+        Error = new_error;
+        stallIterations = 0;
+    else
+        stallIterations = stallIterations + 1;
+    end
+    x0 = x1;
+    clear slope
+
+    iter = iter + 1;
 end
 
+fprintf("Newton-Raphson solved in %d iterations", iter);
+x1
+
+% Running it numerous times
+[Kinematics, T, nr_results] = simulateSystem(params, time, 0, x1);
+
+
+%% Stability
+x0 = x1;
+
+for i = 1:numel(x0)
+    x0(i) = x0(i) + del;
+    [~, ~,R1] = simulateSystem(params, time, 1, x0);
+    x0(i) = x0(i) - 2*del;
+    [~, ~,R2] = simulateSystem(params, time, 1, x0);
+    slope(:, i) = (R1 - R2)/(2*del);
+    x0(i) = x0(i) + del;
+end
+
+MaxEig = max(eig(slope))
+
+
+%% Animation
 if animate == 1
     animateHopper(Kinematics, T);
 end
 
+%% Plotting
 figure()
-axis equal
-plot(Kinematics.X,Kinematics.Z);
+hold on
+% axis equal
+plot(Kinematics.X,Kinematics.Z, "LineWidth", 2);
+yline(max(Kinematics.Z), '--k', "LineWidth", 2);
+yline(0, 'k', "LineWidth", 3);
 xlabel("x-position, m")
 ylabel("z-position, m")
 title("SLIP-Model Position")
+grid on
+legend("Trajectory", "Max Height", "Ground", "Location", "bestoutside");
+ylim([-.1 1.8]);
