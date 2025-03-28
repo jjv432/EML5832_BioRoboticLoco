@@ -21,8 +21,9 @@ time = 0:.1:30;
 
 iter = 0;
 stallIterations = 0;
-tol = .00001;
-del = .00001;
+tol = 1e-6;
+del = 1e-5;
+nr_max_iter = 200;
 
 x0 =[params.l0; params.l_d_0; params.phi_0; params.phi_d_0]; % this was our initial 
 
@@ -36,7 +37,7 @@ abandon the idea of comparing the flight stances for now.
 E = R - x0;
 Error = norm(E);
 
-while (Error > tol) && (stallIterations < 100)
+while (Error > tol) && (stallIterations < nr_max_iter)
 
     for i = 1:numel(x0)
         x0(i) = x0(i) + del;
@@ -98,9 +99,16 @@ if animate == 1
     animateHopper(Kinematics, T);
 end
 
+%% Plotting
 figure()
-axis equal
-plot(Kinematics.X,Kinematics.Z);
+hold on
+% axis equal
+plot(Kinematics.X,Kinematics.Z, "LineWidth", 2);
+yline(max(Kinematics.Z), '--k', "LineWidth", 2);
+yline(0, 'k', "LineWidth", 3);
 xlabel("x-position, m")
 ylabel("z-position, m")
 title("SLIP-Model Position")
+grid on
+legend("Trajectory", "Max Height", "Ground", "Location", "bestoutside");
+ylim([-.1 1.8]);
