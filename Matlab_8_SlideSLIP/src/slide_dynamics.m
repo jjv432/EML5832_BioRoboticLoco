@@ -18,14 +18,14 @@ function func = slide_dynamics(t,y, params)
     x = y(5);
     x_d = y(6);
 
-    l_dd = l*phi_d^2 - g*cos(phi) - (k/m)*(l - l0) - (b/m)*l_d;
-    phi_dd = (1/l)*(-2*l_d*phi_d) + (1/l)*(g*sin(phi)) + t_hip/(m*l^2);
-
     % Adding sliding dynamics
     Fleg = k*(l0 - l) - b*l_d;
     Fleg_x = abs(Fleg*sin(phi));
     Fleg_y = Fleg*cos(phi);
     Ffk = abs(Fleg_y * muK);
+
+    l_dd = l*phi_d^2 - g*cos(phi) - (k/m)*(l - l0) - (b/m)*l_d;
+    phi_dd = (1/l)*(-2*l_d*phi_d) + (1/l)*(g*sin(phi)) + t_hip/(m*l^2) - (Fleg/m + Fleg*cos(phi)*sin(phi)*muK/m);
 
     % Making sure directions of forces are perserved; lazy fix
     if phi < 0

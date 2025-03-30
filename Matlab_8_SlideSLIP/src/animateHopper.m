@@ -26,7 +26,7 @@ stance_x_vals). Something about the animation
 
     for i = 1:numel(stance_x_vals)
 
-        stance_bool = stance_x_vals(i) ~= 0;
+        stance_bool = stance_bools(i);
 
         if stance_bool
             cur_sum = cur_sum + stance_x_vals(i);
@@ -38,6 +38,8 @@ stance_x_vals). Something about the animation
             cur_mean = 0;
             cur_sum = 0;
             num = 0;
+
+
         end
 
         last_stance_bool = stance_bool;
