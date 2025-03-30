@@ -76,7 +76,7 @@ stance_x_vals). Something about the animation
                 stance_x_start = mean_x_vector(stance_iter);
             end
 
-            h2 = fill(x_coords + stance_x_start + X_Slide(i -1) - X_Slide(1), y_coords, 'g');
+            h2 = fill(x_coords + stance_x_start + X_Slide(i) - X_Slide(1), y_coords, 'g');
 
             transition = 0;
         else
