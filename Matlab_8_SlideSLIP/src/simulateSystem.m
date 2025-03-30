@@ -9,6 +9,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
     %% ODE45 Call
     Kinematics.X = [];
+    Kinematics.X_Slide = [];
     Kinematics.Z = [];
     Kinematics.Phi = [];
     Kinematics.L = [];
@@ -148,9 +149,9 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 end
 
                 % Solve for x and z positions and velocities
-                x_vals = l_vals .* sin(phi_vals) + x_vals_sliding;
+                x_vals = l_vals .* sin(phi_vals) + x_vals_sliding - x_vals_sliding(1);
                 z_vals = l_vals .* cos(phi_vals);
-                x_d_vals = l_vals.*phi_d_vals.*sin(phi_vals) + l_d_vals.*sin(phi_vals) + x_d_vals_sliding;
+                x_d_vals = l_vals.*phi_d_vals.*sin(phi_vals) + l_d_vals.*sin(phi_vals);
                 z_d_vals = l_vals.*phi_d_vals.*cos(phi_vals) + l_d_vals.*cos(phi_vals);
 
                 if i>1
@@ -158,7 +159,8 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 end
 
                 % Store the T, x, and z positions for plotting
-                Kinematics.X = [Kinematics.X; x_vals(1:end-1) + x_offset + x_vals_sliding(1:end-1)];
+                Kinematics.X = [Kinematics.X; x_vals(1:end-1) + x_offset];
+                Kinematics.X_Slide = [Kinematics.X_Slide; x_vals_sliding(1:end-1)];
                 Kinematics.Z = [Kinematics.Z; z_vals(1:end-1)];
                 Kinematics.Phi = [Kinematics.Phi; phi_vals(1:end-1)];
                 Kinematics.L = [Kinematics.L; l_vals(1:end-1)];

@@ -10,6 +10,7 @@ stance_x_vals). Something about the animation
 
 
     X = Kinematics.X;
+    X_Slide = Kinematics.X_Slide;
     Z = Kinematics.Z;
     Phi = Kinematics.Phi;
     L = Kinematics.L;
@@ -68,14 +69,14 @@ stance_x_vals). Something about the animation
             theta = pi/2 - Phi(i);
             rot_matrix = [cos(theta), -sin(theta); sin(theta), cos(theta)];
             coords = rot_matrix * (leg_coordinates.*[L(i); 1]);
-            x_coords= coords(1, :) + X(i);
+            x_coords= coords(1, :);
             y_coords = coords(2, :);
 
             if isempty(stance_x_start)
                 stance_x_start = mean_x_vector(stance_iter);
             end
 
-            h2 = fill(x_coords + stance_x_start + .175, y_coords, 'g');
+            h2 = fill(x_coords + stance_x_start + X_Slide(i -1) - X_Slide(1), y_coords, 'g');
 
             transition = 0;
         else
