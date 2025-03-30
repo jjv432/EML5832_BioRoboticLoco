@@ -44,6 +44,11 @@ stance_x_vals). Something about the animation
     end
 
 
+    % special case that you're only animating one stance
+    if isempty(mean_x_vector)
+        mean_x_vector = mean(stance_x_vals);
+    end
+
     figure();
     grid on
     hold on
@@ -63,7 +68,7 @@ stance_x_vals). Something about the animation
             theta = pi/2 - Phi(i);
             rot_matrix = [cos(theta), -sin(theta); sin(theta), cos(theta)];
             coords = rot_matrix * (leg_coordinates.*[L(i); 1]);
-            x_coords= coords(1, :);
+            x_coords= coords(1, :) + X(i);
             y_coords = coords(2, :);
 
             if isempty(stance_x_start)

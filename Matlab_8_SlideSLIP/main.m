@@ -2,7 +2,7 @@
 % Ryan Kaczmarczyk, Jack Vranicar, and Shane Rober
 
 clc;
-clear;
+clear all; % need to clear persistent values
 close all;
 format compact;
 
