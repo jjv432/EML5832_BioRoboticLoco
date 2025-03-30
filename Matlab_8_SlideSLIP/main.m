@@ -19,7 +19,9 @@ time = 0:.1:30;
 
 x0 =[params.l0; params.l_d_0; params.phi_0; params.phi_d_0]; % this was our initial 
 
-[Kinematics, T, ~] = simulateSystem(params, time, 1, x0);
+nr_bool = 0;
+
+[Kinematics, T, ~] = simulateSystem(params, time, nr_bool, x0);
 
 
 %% Animation

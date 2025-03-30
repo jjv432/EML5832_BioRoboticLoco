@@ -66,12 +66,22 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 Kinematics.L = [Kinematics.L; l_vals(1:end-1)];
                 T = [T; T1(1:end-1) + t_offset, ones(numel(T1)-1, 1)];
 
-                % Set 'state' and the init vector for the next state
-                init = [x_vals(end) + x_offset; x_d_vals(end); z_vals(end); z_d_vals(end)];
-                state = 'flight';
-                flight_counter = flight_counter + 1;
 
+                % if the flight condition caused the ode to stop
+                if ie == 1
 
+                    % Set 'state' and the init vector for the next state
+                    init = [x_vals(end) + x_offset; x_d_vals(end); z_vals(end); z_d_vals(end)];
+                    state = 'flight';
+
+                % If the sliding condition caused the ode to stop
+                elseif ie ==2
+
+                    % Set 'state' and the init vector for the next state
+                    init = [x_vals(end) + x_offset; x_d_vals(end); z_vals(end); z_d_vals(end)];
+                    state = 'sliding';
+
+                end
 
             case 'flight'
 
