@@ -60,9 +60,9 @@ stance_x_vals). Something about the animation
 
 
     persistent stance_x_start;
-    slide_x_start = 0;
-    slide_bool = 0;
-    last_slide_bool = 0;
+    % slide_x_start = 0;
+    % slide_bool = 0;
+    % last_slide_bool = 0;
 
     for i = 2:length(X)
 
