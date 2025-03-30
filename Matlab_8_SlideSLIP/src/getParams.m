@@ -11,6 +11,7 @@ function params = getParams()
     params.phi_d_0 = 1.5;
     params.l_d_0 = -3.5;
     params.muS = .55;
+    % params.muS = 5;
     params.muK = (.9)*params.muS;
 
 end

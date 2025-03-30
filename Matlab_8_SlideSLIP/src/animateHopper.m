@@ -62,9 +62,7 @@ stance_x_vals). Something about the animation
 
 
     persistent stance_x_start;
-    slide_x_start = 0;
-    slide_bool = 0;
-    last_slide_bool = 0;
+    
 
     for i = 2:length(X)
 
@@ -84,7 +82,7 @@ stance_x_vals). Something about the animation
                 stance_x_start = mean_x_vector(stance_iter);
             end
 
-            h2 = fill(x_coords + stance_x_start + .175, y_coords, 'g');
+            h2 = fill(x_coords + stance_x_start, y_coords, 'g');
 
             transition = 0;
 
@@ -100,21 +98,11 @@ stance_x_vals). Something about the animation
             x_coords= coords(1, :);
             y_coords = coords(2, :);
 
-
             if isempty(stance_x_start)
                 stance_x_start = mean_x_vector(stance_iter);
             end
 
-            % Finding where the thing starts sliding
-            slide_bool = X_Slide(i) ~= 0;
-            if slide_bool == 1 && last_slide_bool == 0
-                % slide_x_start = X_Slide(i)
-                slide_x_start = .1716;
-            end
-
-            last_slide_bool = slide_bool;
-
-            h2 = fill(x_coords + stance_x_start + .1716 + X_Slide(i) - slide_x_start, y_coords, 'g');
+            h2 = fill(x_coords + stance_x_start + X_Slide(i) + .5, y_coords, 'g'); % for some reason .5 fixes the animation- need to figure out where the actual issue is still
 
             transition = 0;
 
