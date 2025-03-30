@@ -32,7 +32,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
         disp(myState)
         switch myState
 
-            
+
 
             case 'stance'
 
@@ -60,9 +60,9 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 x_d_vals = l_vals.*phi_d_vals.*sin(phi_vals) + l_d_vals.*sin(phi_vals);
                 z_d_vals = l_vals.*phi_d_vals.*cos(phi_vals) + l_d_vals.*cos(phi_vals);
 
-               
-                    x_vals = x_vals - x_vals(1);
-               
+
+                x_vals = x_vals - x_vals(1);
+
 
                 % Store the T, x, and z positions for plotting
                 Kinematics.X = [Kinematics.X; x_vals(1:end-1) + x_offset];
@@ -161,8 +161,8 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 z_d_vals = l_vals.*phi_d_vals.*cos(phi_vals) + l_d_vals.*cos(phi_vals);
 
                 % if i>2
-                %     x_vals = x_vals - x_vals(1);
-                %     % x_vals_sliding = x_vals_sliding - x_vals_sliding(1);
+                    x_vals = x_vals - x_vals(1);
+                    % x_vals_sliding = x_vals_sliding - x_vals_sliding(1);
                 % end
 
                 % Store the T, x, and z positions for plotting
