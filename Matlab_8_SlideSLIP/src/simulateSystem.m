@@ -4,6 +4,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     % Ending Conditions for ODE45
     stance_options = odeset('Events', @(t, y) stance_event_func(t,y,params));
     flight_options = odeset('Events', @(t, y) flight_event_func(t,y,params));
+    slide_options = odeset('Events', @(t, y) slide_event_func(t,y,params));
     % flight_options = [flight_options ; odeset('Events', @(t,y) flight_apex_event_func(t, y, params))];
 
     %% ODE45 Call
@@ -78,7 +79,9 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 elseif ie ==2
 
                     % Set 'state' and the init vector for the next state
-                    init = [x_vals(end) + x_offset; x_d_vals(end); z_vals(end); z_d_vals(end)];
+                    % For sliding, need l, l_d, phi, phi_d, x, and x_d Need
+                    % x because have 3rd EOM for sliding
+                    init = [l_vals(end); l_d_vals(end); phi_vals(end); phi_d_vals(end); x_vals(end); x_d_vals(end)];
                     state = 'sliding';
 
                 end
@@ -121,15 +124,10 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 init = [l0; l_d0; phi; params.phi_d_0];
                 state = 'stance';
 
-                % Approach will be to set if statements based on which
-                % event function occurs, then setting the state- cannot
-                % just assume we only go back and forth between stance and
-                % flight
-
             case 'sliding'
 
                 % Run the stance simulation
-                [T1, Y1] = ode45(@(T1, Y1) stance_dynamics(T1, Y1, params), time, init, stance_options);
+                [T1, Y1] = ode45(@(T1, Y1) slide_dynamics(T1, Y1, params), time, init, slide_options);
 
                 % Parse out the results
                 l_vals = Y1(:, 1);
