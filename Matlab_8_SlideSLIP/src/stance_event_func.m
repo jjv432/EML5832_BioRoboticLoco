@@ -1,5 +1,6 @@
 function [position,isterminal,direction] = stance_event_func(t,y, params)
 
+    % Event for a transition to flight
     persistent k l0 b t_hip
     if isempty(k)
         k = params.k;
@@ -15,7 +16,23 @@ function [position,isterminal,direction] = stance_event_func(t,y, params)
 
     Fleg = k*(l0 - l) - b*l_d;
 
-    position = Fleg*cos(phi) + (1/l)*t_hip*sin(phi);
-    isterminal = 1;
-    direction = -1;
+    position(1) = Fleg*cos(phi) + (1/l)*t_hip*sin(phi);
+    isterminal(1) = 1;
+    direction(1) = -1;
+
+    % Event for a transistion to sliding    
+    persistent muS
+    if isempty(muS)
+        muS = params.muS;
+    end
+
+    Fleg_x = -Fleg*sin(phi);
+    Fleg_y = Fleg*cos(phi);
+    Ffs = Fleg_y * muS;
+
+    position(2) = (abs(Fleg_x) > abs(Ffs)) -1;
+    isterminal(2) = 1;
+    direction(2) = 0;
+
+
 end
