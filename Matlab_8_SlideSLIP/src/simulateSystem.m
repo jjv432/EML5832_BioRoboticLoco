@@ -110,7 +110,8 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                     t_offset = 0;
                 end
 
-                Kinematics.X = [Kinematics.X; x_vals(1:end-1) + x_offset];
+                % Kinematics.X = [Kinematics.X; x_vals(1:end-1) + x_offset];
+                Kinematics.X = [Kinematics.X; x_vals(1:end-1)];
                 Kinematics.X_Slide = [Kinematics.X_Slide; zeros(numel(x_vals(1:end-1)), 1)];
                 Kinematics.Z = [Kinematics.Z; z_vals(1:end-1)];
                 Kinematics.Phi = [Kinematics.Phi; zeros(numel(x_vals) - 1, 1)];
