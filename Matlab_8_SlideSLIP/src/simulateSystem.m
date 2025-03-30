@@ -24,14 +24,15 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     if nr_bool
         duration = 2;
     else
-        duration = 3;
+        duration = 4;
     end
 
     for i = 1:duration
 
         disp(myState)
-
         switch myState
+
+            
 
             case 'stance'
 
@@ -59,9 +60,9 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 x_d_vals = l_vals.*phi_d_vals.*sin(phi_vals) + l_d_vals.*sin(phi_vals);
                 z_d_vals = l_vals.*phi_d_vals.*cos(phi_vals) + l_d_vals.*cos(phi_vals);
 
-
-                x_vals = x_vals - x_vals(1);
-
+                % if i>1
+                %     x_vals = x_vals - x_vals(1);
+                % end
 
                 % Store the T, x, and z positions for plotting
                 Kinematics.X = [Kinematics.X; x_vals(1:end-1) + x_offset];
@@ -85,7 +86,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                     % Set 'state' and the init vector for the next state
                     % For sliding, need l, l_d, phi, phi_d, x, and x_d Need
                     % x because have 3rd EOM for sliding
-                    init = [l_vals(end); l_d_vals(end); phi_vals(end); phi_d_vals(end); x_vals(end) + x_offset; x_d_vals(end)];
+                    init = [l_vals(end); l_d_vals(end); phi_vals(end); phi_d_vals(end); x_vals(end); x_d_vals(end)];
                     myState = 'sliding';
 
                 end
@@ -109,8 +110,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                     t_offset = 0;
                 end
 
-                % Kinematics.X = [Kinematics.X; x_vals(1:end-1) + x_offset];
-                Kinematics.X = [Kinematics.X; x_vals(1:end-1)];
+                Kinematics.X = [Kinematics.X; x_vals(1:end-1) + x_offset];
                 Kinematics.X_Slide = [Kinematics.X_Slide; zeros(numel(x_vals(1:end-1)), 1)];
                 Kinematics.Z = [Kinematics.Z; z_vals(1:end-1)];
                 Kinematics.Phi = [Kinematics.Phi; zeros(numel(x_vals) - 1, 1)];
@@ -159,22 +159,21 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 x_d_vals = l_vals.*phi_d_vals.*sin(phi_vals) + l_d_vals.*sin(phi_vals);
                 z_d_vals = l_vals.*phi_d_vals.*cos(phi_vals) + l_d_vals.*cos(phi_vals);
 
-
-                x_vals = x_vals - x_vals(1);
-                % x_vals_sliding = x_vals_sliding - x_vals_sliding(1);
-                
-
+                % if i>2
+                %     x_vals = x_vals - x_vals(1);
+                %     % x_vals_sliding = x_vals_sliding - x_vals_sliding(1);
+                % end
 
                 % Store the T, x, and z positions for plotting
-                Kinematics.X = [Kinematics.X; x_vals(1:end-1) + x_offset + x_vals_sliding(1:end-1)];
-                Kinematics.X_Slide = [Kinematics.X_Slide; x_vals_sliding(1:end-1)];
+                Kinematics.X = [Kinematics.X; x_vals(1:end-1) + x_offset + x_vals_sliding(1:end-1)- x_vals_sliding(1)];
+                Kinematics.X_Slide = [Kinematics.X_Slide; x_vals_sliding(1:end-1)- x_vals_sliding(1)];
                 Kinematics.Z = [Kinematics.Z; z_vals(1:end-1)];
                 Kinematics.Phi = [Kinematics.Phi; phi_vals(1:end-1)];
                 Kinematics.L = [Kinematics.L; l_vals(1:end-1)];
                 T = [T; T1(1:end-1) + t_offset, zeros(numel(T1)-1, 1), ones(numel(T1)-1, 1)];
 
                 % Set 'state' and the init vector for the next state
-                init = [x_vals(end) + x_offset + x_vals_sliding(end); x_d_vals(end) + x_d_vals_sliding(end); z_vals(end); z_d_vals(end)];
+                init = [x_vals(end) + x_offset + x_vals_sliding(end-1); x_d_vals(end) + x_d_vals_sliding(end); z_vals(end); z_d_vals(end)];
                 myState = 'flight';
 
         end
