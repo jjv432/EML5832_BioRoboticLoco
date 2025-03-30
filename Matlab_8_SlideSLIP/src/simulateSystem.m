@@ -24,7 +24,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     if nr_bool
         duration = 2;
     else
-        duration = 1;
+        duration = 2;
     end
 
     for i = 1:duration
