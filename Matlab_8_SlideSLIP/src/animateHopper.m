@@ -65,7 +65,7 @@ stance_x_vals). Something about the animation
                 stance_iter = stance_iter + 1;
             end
 
-            h1 = plot(X(i) + .175, Z(i), 'ro', 'LineWidth',5); % this .16 is a bandaid!
+            h1 = plot(X(i), Z(i), 'ro', 'LineWidth',5);
             theta = pi/2 - Phi(i);
             rot_matrix = [cos(theta), -sin(theta); sin(theta), cos(theta)];
             coords = rot_matrix * (leg_coordinates.*[L(i); 1]);
@@ -76,7 +76,7 @@ stance_x_vals). Something about the animation
                 stance_x_start = mean_x_vector(stance_iter);
             end
 
-            h2 = fill(x_coords + stance_x_start + X_Slide(i) - X_Slide(1), y_coords, 'g');
+            h2 = fill(x_coords + stance_x_start + .1716 + X_Slide(i) - X_Slide(1), y_coords, 'g');
 
             transition = 0;
         else
