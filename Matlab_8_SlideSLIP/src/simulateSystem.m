@@ -45,7 +45,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 % Offset values
                 if ~isempty(Kinematics.X)
                     x_offset = Kinematics.X(end);
-                    t_offset = T(end);
+                    t_offset = T(end, 1);
                 else
                     x_offset = 0;
                     t_offset = 0;
@@ -67,7 +67,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 Kinematics.Z = [Kinematics.Z; z_vals(1:end-1)];
                 Kinematics.Phi = [Kinematics.Phi; phi_vals(1:end-1)];
                 Kinematics.L = [Kinematics.L; l_vals(1:end-1)];
-                T = [T; T1(1:end-1) + t_offset, ones(numel(T1)-1, 1)];
+                T = [T; T1(1:end-1) + t_offset, ones(numel(T1)-1, 1), zeros(numel(T1)-1, 1)];
 
 
                 % if the flight condition caused the ode to stop
@@ -101,7 +101,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 % Store the T, x, and z positions for plotting
                 if ~isempty(Kinematics.X)
                     x_offset = Kinematics.X(end);
-                    t_offset = T(end);
+                    t_offset = T(end, 1);
                 else
                     x_offset = 0;
                     t_offset = 0;
@@ -112,7 +112,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 Kinematics.Z = [Kinematics.Z; z_vals(1:end-1)];
                 Kinematics.Phi = [Kinematics.Phi; zeros(numel(x_vals) - 1, 1)];
                 Kinematics.L = [Kinematics.L; zeros(numel(x_vals) - 1, 1)];
-                T = [T; T1(1:end-1) + t_offset, zeros(numel(T1)-1, 1)];
+                T = [T; T1(1:end-1) + t_offset, zeros(numel(T1)-1, 1), zeros(numel(T1)-1, 1)];
 
                 % Set 'state' and the init vector for the next state
                 % phi = tan(z_vals(end)/ x_vals(end));
@@ -144,7 +144,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 % Offset values
                 if ~isempty(Kinematics.X)
                     x_offset = Kinematics.X(end);
-                    t_offset = T(end);
+                    t_offset = T(end, 1);
                 else
                     x_offset = 0;
                     t_offset = 0;
@@ -158,6 +158,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
                 if i>1
                     x_vals = x_vals - x_vals(1);
+                    % x_vals_sliding = x_vals_sliding - x_vals_sliding(1);
                 end
 
                 % Store the T, x, and z positions for plotting
@@ -166,7 +167,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 Kinematics.Z = [Kinematics.Z; z_vals(1:end-1)];
                 Kinematics.Phi = [Kinematics.Phi; phi_vals(1:end-1)];
                 Kinematics.L = [Kinematics.L; l_vals(1:end-1)];
-                T = [T; T1(1:end-1) + t_offset, ones(numel(T1)-1, 1)];
+                T = [T; T1(1:end-1) + t_offset, zeros(numel(T1)-1, 1), ones(numel(T1)-1, 1)];
 
                 % Set 'state' and the init vector for the next state
                 init = [x_vals(end) + x_offset; x_d_vals(end); z_vals(end); z_d_vals(end)];

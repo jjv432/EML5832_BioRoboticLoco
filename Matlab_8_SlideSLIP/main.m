@@ -15,7 +15,7 @@ animate = 1;
 params = getParams();
 
 % Time Vector for ODE45
-time = 0:.1:30;
+time = 0:.01:30;
 
 x0 =[params.l0; params.l_d_0; params.phi_0; params.phi_d_0]; % this was our initial 
 
