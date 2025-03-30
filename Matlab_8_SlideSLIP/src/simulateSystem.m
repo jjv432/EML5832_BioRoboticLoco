@@ -60,9 +60,9 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 x_d_vals = l_vals.*phi_d_vals.*sin(phi_vals) + l_d_vals.*sin(phi_vals);
                 z_d_vals = l_vals.*phi_d_vals.*cos(phi_vals) + l_d_vals.*cos(phi_vals);
 
-                % if i>1
-                %     x_vals = x_vals - x_vals(1);
-                % end
+               
+                    x_vals = x_vals - x_vals(1);
+               
 
                 % Store the T, x, and z positions for plotting
                 Kinematics.X = [Kinematics.X; x_vals(1:end-1) + x_offset];
