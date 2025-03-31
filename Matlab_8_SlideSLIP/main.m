@@ -19,6 +19,7 @@ time = 0:.01:30;
 
 x0 =[params.l0; params.l_d_0; params.phi_0; params.phi_d_0]; % this was our initial 
 
+% Want to do newton-raphson?
 nr_bool = 0;
 
 [Kinematics, T, ~] = simulateSystem(params, time, nr_bool, x0);

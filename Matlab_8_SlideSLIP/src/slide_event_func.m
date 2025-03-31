@@ -1,5 +1,6 @@
 function [position,isterminal,direction] = slide_event_func(t,y, params)
 
+    % Values that won't change
     persistent k l0 b t_hip
     if isempty(k)
         k = params.k;
@@ -7,7 +8,8 @@ function [position,isterminal,direction] = slide_event_func(t,y, params)
         b = params.b;
         t_hip = params.t_hip;
     end
-
+    
+    % Parse out the values
     l = y(1);
     l_d = y(2);
     phi = y(3);
@@ -15,6 +17,7 @@ function [position,isterminal,direction] = slide_event_func(t,y, params)
 
     Fleg = k*(l0 - l) - b*l_d;
 
+    % Assuming can only go to flight from sliding. May not be accurate
     position = Fleg*cos(phi) + (1/l)*t_hip*sin(phi);
     isterminal = 1;
     direction = -1;

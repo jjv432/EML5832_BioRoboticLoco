@@ -1,5 +1,6 @@
 function func = slide_dynamics(t,y, params)
 
+    % Values that won't change
     persistent b m k l0 g t_hip muK
     if isempty(b)
         b = params.b;
@@ -11,6 +12,7 @@ function func = slide_dynamics(t,y, params)
         muK = params.muK;
     end
 
+    % Parse out the states
     l = y(1);
     l_d = y(2);
     phi = y(3);

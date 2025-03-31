@@ -5,6 +5,7 @@ function func = flight_dynamics(t, y, params)
         g = params.g;
     end
 
+    % Parse out the states
     x = y(1);
     x_d = y(2);
     z = y(3);
@@ -13,6 +14,7 @@ function func = flight_dynamics(t, y, params)
     x_dd = 0;
     z_dd = -g;
 
+    % Return the derivatives
     func = [x_d; x_dd; z_d; z_dd];
 
 end

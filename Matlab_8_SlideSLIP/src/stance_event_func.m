@@ -1,6 +1,7 @@
 function [position,isterminal,direction] = stance_event_func(t,y, params)
 
     % Event for a transition to flight
+
     persistent k l0 b t_hip
     if isempty(k)
         k = params.k;
@@ -20,7 +21,8 @@ function [position,isterminal,direction] = stance_event_func(t,y, params)
     isterminal(1) = 1;
     direction(1) = -1;
 
-    % Event for a transistion to sliding    
+    % Event for a transistion to sliding
+    
     persistent muS
     if isempty(muS)
         muS = params.muS;
