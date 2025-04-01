@@ -173,7 +173,8 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 T = [T; T1(1:end-1) + t_offset, zeros(numel(T1)-1, 1), ones(numel(T1)-1, 1)];
 
                 % Set 'state' and the init vector for the next state
-                init = [x_vals(end) + x_offset + x_vals_sliding(end-1); x_d_vals(end) + x_d_vals_sliding(end); z_vals(end); z_d_vals(end)];
+                % init = [x_vals(end) + x_offset + x_vals_sliding(end-1); x_d_vals(end) + x_d_vals_sliding(end); z_vals(end); z_d_vals(end)];
+                init = [x_vals(end) + x_offset + x_vals_sliding(end); x_d_vals(end) + x_d_vals_sliding(end); z_vals(end); z_d_vals(end)];
                 state = 'flight';
 
         end
