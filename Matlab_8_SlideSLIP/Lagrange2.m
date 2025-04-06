@@ -2,11 +2,11 @@ clc; clear; close all;
 
 % Parameters of the system
 m1 = 2;
-m2 = 10;
 g = 9.8;
 L = 1;
 l0 = 1;
-k = 50;
+k = 500;
+b = 50;
 
 % Define generalized coords as sym vars and funs
 syms t x(t) l(t) th(t)
@@ -40,6 +40,10 @@ dL_ddq_dt = diff(dL_ddq, t);
 % LHS of EL eqn
 EL_LHS = dL_ddq_dt - dL_dq;
 
+% RHS
+Fdamp = -b * sqrt(([1 0]*dr)^2 + ([0 1]*dr)^2);
+EL_RHS = [Fdamp; 0; 0];
+
 % Solve for ddq (accelerations)
 % Substitute sym vars in place of sym funs
 % subs(EL_LHS, diff(s,t), ds);
@@ -58,22 +62,30 @@ EL_LHS = subs(EL_LHS, diff(l, t, t), ddl_);
 EL_LHS = subs(EL_LHS, diff(l, t), dl_);
 EL_LHS = subs(EL_LHS, l, l_);
 
-% Need to make EL_LHS non-time-varying
-% EL_LHS_(1, 1) = [1 0 0]*EL_LHS;
-% EL_LHS_(2, 1) = [0 1 0]*EL_LHS;
-% EL_LHS_(3, 1) = [0 0 1]*EL_LHS;
+EL_RHS = subs(EL_RHS, diff(l, t, t), ddl_);
+EL_RHS = subs(EL_RHS, diff(l, t), dl_);
+EL_RHS = subs(EL_RHS, l, l_);
 
-% EL_LHS_(1, 1) = [1 0 0]*EL_LHS;
+EL_RHS = subs(EL_RHS, diff(th, t, t), ddth_);
+EL_RHS = subs(EL_RHS, diff(th, t), dth_);
+EL_RHS = subs(EL_RHS, th, th_);
+
+EL_RHS = subs(EL_RHS, diff(x, t, t), ddx_);
+EL_RHS = subs(EL_RHS, diff(x, t), dx_);
+EL_RHS = subs(EL_RHS, x, x_);
+
+% Need to make EL_LHS non-time-varying
 EL_LHS_(1, 1) = [1 0 0]*EL_LHS;
 EL_LHS_(2, 1) = [0 1 0]*EL_LHS;
 % EL_LHS_(3, 1) = [0 0 1]*EL_LHS;
 
+EL_RHS_(1, 1) = [1 0 0]*EL_RHS;
+EL_RHS_(2, 1) = [0 1 0]*EL_RHS;
+% EL_RHS_(3, 1) = [0 0 1]*EL_RHS;
 
 % Solve for accels
-% ddq_ = [ddx_; ddl_; ddth_];
 ddq_ = [ddl_; ddth_; ddx_];
-ddq_solve = solve(EL_LHS_ == [0;0], ddq_); % store accels
-% ddq_solve = solve(EL_LHS_ == [0;0;0], ddq_); % store accels
+ddq_solve = solve(EL_LHS_ == EL_RHS_, ddq_); % store accels
 
 % ddq_solve.dds_(1)
 
@@ -107,6 +119,8 @@ subplot(2, 1, 2)
 plot(t_sim, x_sim(:,3));
 xlabel("t (s)");
 ylabel("angle (rad)");
+
+max(x_sim(:,1))
 
 % Plot animation
 FPS = 20;
