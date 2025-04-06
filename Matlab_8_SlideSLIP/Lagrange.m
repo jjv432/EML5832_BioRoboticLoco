@@ -32,7 +32,7 @@ T1 = (1/2)*m1*dr1.'*dr1;
 T = T1;
 
 % Potential Energy
-V1 = m1*g*[0, 1]*r1 + (1/2)*k*(norm(r1) - L)^2;
+V1 = m1*g*[0, 1]*r1 + (1/2)*k*( sqrt( ([1 0]*r1).^2 + ([0 1]*r1).^2) - L)^2;
 % V2 = m2*g*[0, 1]*r2;
 
 V = V1;
@@ -74,12 +74,12 @@ ddq_solve = solve(EL_LHS_ == [0;0], ddq_); % store accels
 
 %% Simulate our eom
 % x = [s, s_d, th, th_d]'
-dds_solve = ddq_solve.ddl_;
+ddl_solve = ddq_solve.ddl_;
 ddth_solve = ddq_solve.ddth_;
 
 % Create a fn that returns the acceleration of s when fed a state vector
 x = [l_; dl_; th_; dth_];
-dds_fun = matlabFunction(dds_solve, 'Vars', {x});
+dds_fun = matlabFunction(ddl_solve, 'Vars', {x});
 ddth_fun = matlabFunction(ddth_solve, 'Vars', {x});
 
 % odefun for ode45
