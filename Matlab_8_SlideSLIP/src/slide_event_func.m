@@ -14,6 +14,8 @@ function [position,isterminal,direction] = slide_event_func(t,y, params)
     l_d = y(2);
     phi = y(3);
     phi_d = y(4);
+    x = y(5);
+    x_d = y(6);
 
     Fleg = k*(l0 - l) - b*l_d;
 
