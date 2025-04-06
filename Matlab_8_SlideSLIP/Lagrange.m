@@ -111,7 +111,9 @@ figure();
 for iter = 1:numel(t_anim)
     cla; % clear axes
     % plot cart as red square
-    plot(l_anim(iter)*sin(th_anim(iter)), l_anim(iter)*cos(th_anim(iter)), 'rs', 'MarkerSize', 10, 'MarkerFaceColor', 'r')
+    hold on
+    plot(l_anim(iter)*sin(th_anim(iter)), l_anim(iter)*cos(th_anim(iter)), 'ro', 'MarkerSize', 10, 'MarkerFaceColor', 'r')
+    yline(0, 'k');
     axis equal
     axis auto
     axis([-5 5 -2 2]);
