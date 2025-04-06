@@ -1,4 +1,4 @@
-clc; clear; close all;
+clc; clear all; close all;
 
 % Parameters of the system
 m1 = 2;
@@ -7,35 +7,31 @@ g = 9.8;
 L = 1;
 k = 500;
 b = 20;
+mu = 1;
 
 % Define generalized coords as sym vars and funs
-syms t l(t) th(t)
+syms t l(t) th(t) x(t)
 
 %% Step 1: Gen coords
-q = [l; th]; % vector of gen coords
+% q = [l; th; x]; % vector of gen coords
+q = [l; th; x]; % vector of gen coords
 dq = diff(q, t); % gen velos
 ddq = diff(q, t, t); % gen accels
 
 %% Step 2: Calculate Energies and Lagrangian
 
 % Create vectors pointing to mass centers
-r1 = l*[sin(th); cos(th)];
-% r2 = [l + L*sin(th); -L*cos(th)];
+% r1 = [l*sin(th) + x; l*cos(th)];
+r1 = [l*sin(th); l*cos(th)];
 
 dr1 = diff(r1, t);
-% dr2 = diff(r2, t);
 
 % Kinetic energy
 T1 = (1/2)*m1*dr1.'*dr1;
-% T2 = (1/2)*m2*dr2.'*dr2;
-
-% T = T1 + T2;
 T = T1;
 
 % Potential Energy
 V1 = m1*g*[0, 1]*r1 + (1/2)*k*( sqrt( ([1 0]*r1).^2 + ([0 1]*r1).^2) - L)^2;
-% V2 = m2*g*[0, 1]*r2;
-
 V = V1;
 
 % Lagrange
@@ -51,13 +47,18 @@ dL_ddq_dt = diff(dL_ddq, t);
 EL_LHS = dL_ddq_dt - dL_dq;
 
 % RHS of EL eqn
-Fdamp = - b * sqrt(([1 0]*dr1)^2 + ([0 1]*dr1)^2);
-EL_RHS = [Fdamp; 0];
+Fdamp = -b * sqrt(([1 0]*dr1)^2 + ([0 1]*dr1)^2);
+% Fn = m1*g + k*(sqrt( ([1 0]*r1).^2 + ([0 1]*r1).^2) - L) + Fdamp;
+% Fn = Fn * cos(th);
+% Ffric = mu*Fn;
+% EL_RHS = [Fdamp; 0; 0] + Ffric*[(sin(th))^2 - cos(th); l*cos(th)*sin(th) + l*sin(th); sin(th)];
+% EL_RHS = [Fdamp; 0; 0];
+EL_RHS = [Fdamp; 0; 0];
 
 % Solve for ddq (accelerations)
 % Substitute sym vars in place of sym funs
 % subs(EL_LHS, diff(s,t), ds);
-syms l_ dl_ ddl_ th_ dth_ ddth_ % non-time-varying equivalents
+syms l_ dl_ ddl_ th_ dth_ ddth_ x_ dx_ ddx_% non-time-varying equivalents
 
 % Need to do a, then v, then s. Otherwise, it'll mess up the derivatives
 EL_LHS = subs(EL_LHS, diff(l, t, t), ddl_);
@@ -68,6 +69,11 @@ EL_LHS = subs(EL_LHS, diff(th, t, t), ddth_);
 EL_LHS = subs(EL_LHS, diff(th, t), dth_);
 EL_LHS = subs(EL_LHS, th, th_);
 
+EL_LHS = subs(EL_LHS, diff(x, t, t), ddx_);
+EL_LHS = subs(EL_LHS, diff(x, t), dx_);
+EL_LHS = subs(EL_LHS, x, x_);
+
+% RHS
 EL_RHS = subs(EL_RHS, diff(l, t, t), ddl_);
 EL_RHS = subs(EL_RHS, diff(l, t), dl_);
 EL_RHS = subs(EL_RHS, l, l_);
@@ -76,16 +82,22 @@ EL_RHS = subs(EL_RHS, diff(th, t, t), ddth_);
 EL_RHS = subs(EL_RHS, diff(th, t), dth_);
 EL_RHS = subs(EL_RHS, th, th_);
 
+EL_RHS = subs(EL_RHS, diff(x, t, t), ddx_);
+EL_RHS = subs(EL_RHS, diff(x, t), dx_);
+EL_RHS = subs(EL_RHS, x, x_);
+
 % Need to make EL_LHS non-time-varying
-EL_LHS_(1, 1) = [1 0]*EL_LHS;
-EL_LHS_(2, 1) = [0 1]*EL_LHS;
+EL_LHS_(1, 1) = [1 0 0]*EL_LHS;
+EL_LHS_(2, 1) = [0 1 0]*EL_LHS;
+EL_LHS_(3, 1) = [0 0 1]*EL_LHS;
 
 % Need to make EL_RHS non-time-varying
-EL_RHS_(1, 1) = [1 0]*EL_RHS;
-EL_RHS_(2, 1) = [0 1]*EL_RHS;
+EL_RHS_(1, 1) = [1 0 0]*EL_RHS;
+EL_RHS_(2, 1) = [0 1 0]*EL_RHS;
+EL_RHS_(3, 1) = [0 0 1]*EL_RHS;
 
 % Solve for accels
-ddq_ = [ddl_; ddth_];
+ddq_ = [ddl_; ddth_; ddx_];
 ddq_solve = solve(EL_LHS_ == EL_RHS, ddq_); % store accels
 
 % ddq_solve.dds_(1)
@@ -94,11 +106,13 @@ ddq_solve = solve(EL_LHS_ == EL_RHS, ddq_); % store accels
 % x = [s, s_d, th, th_d]'
 ddl_solve = ddq_solve.ddl_;
 ddth_solve = ddq_solve.ddth_;
+ddx_solve = ddq_solve.ddx_;
 
 % Create a fn that returns the acceleration of s when fed a state vector
-x = [l_; dl_; th_; dth_];
-dds_fun = matlabFunction(ddl_solve, 'Vars', {x});
-ddth_fun = matlabFunction(ddth_solve, 'Vars', {x});
+% x = [l_; dl_; th_; dth_; x_; dx_];
+state_vect = [l_; dl_; th_; dth_; x_; dx_];
+dds_fun = matlabFunction(ddl_solve, 'Vars', {state_vect});
+ddth_fun = matlabFunction(ddth_solve, 'Vars', {state_vect});
 
 % odefun for ode45
 odefun = @(time, state) [state(2); dds_fun(state); state(4); ddth_fun(state)]; % derivative of states 
