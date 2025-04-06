@@ -6,6 +6,7 @@ m2 = 10;
 g = 9.8;
 L = 1;
 k = 500;
+b = 1;
 
 % Define generalized coords as sym vars and funs
 syms t l(t) th(t)
@@ -46,7 +47,9 @@ dL_ddq = gradient(Lagr, dq);
 dL_ddq_dt = diff(dL_ddq, t);
 
 % LHS of EL eqn
-EL_LHS = dL_ddq_dt - dL_dq;
+% EL_LHS = dL_ddq_dt - dL_dq;
+Fdamp = b*sqrt(([1 0]*r1)^2 + ([0 1]*r1)^2 );
+EL_LHS = dL_ddq_dt - dL_dq - [Fdamp; 0];
 
 % Solve for ddq (accelerations)
 % Substitute sym vars in place of sym funs
