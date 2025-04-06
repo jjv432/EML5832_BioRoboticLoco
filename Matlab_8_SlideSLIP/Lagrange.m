@@ -5,7 +5,7 @@ m1 = 2;
 m2 = 10;
 g = 9.8;
 L = 1;
-k = 1;
+k = 500;
 
 % Define generalized coords as sym vars and funs
 syms t l(t) th(t)
@@ -18,7 +18,7 @@ ddq = diff(q, t, t); % gen accels
 %% Step 2: Calculate Energies and Lagrangian
 
 % Create vectors pointing to mass centers
-r1 = l*[cos(th); sin(th)];
+r1 = l*[sin(th); cos(th)];
 % r2 = [l + L*sin(th); -L*cos(th)];
 
 dr1 = diff(r1, t);
@@ -87,7 +87,7 @@ odefun = @(time, state) [state(2); dds_fun(state); state(4); ddth_fun(state)]; %
 
 % sim using ode45
 tspan = [0 10];
-x0 = [2; 0; pi/4; 0];
+x0 = [L; 0; -pi/4; 1];
 [t_sim, x_sim] = ode45(odefun, tspan, x0);
 
 % Plot of position and angle
@@ -104,17 +104,16 @@ ylabel("angle (rad)");
 % Plot animation
 FPS = 20;
 t_anim = tspan(1):1/FPS:tspan(2);
-s_anim = interp1(t_sim, x_sim(:, 1), t_anim);
+l_anim = interp1(t_sim, x_sim(:, 1), t_anim);
 th_anim = interp1(t_sim, x_sim(:, 3), t_anim);
 
 figure();
 for iter = 1:numel(t_anim)
     cla; % clear axes
     % plot cart as red square
-    plot(s_anim(iter), 0, 'rs', 'MarkerSize', 10, 'MarkerFaceColor', 'r');
-    hold on
-    plot([s_anim(iter), s_anim(iter) + L*sin(th_anim(iter))], [0, -L*cos(th_anim(iter))], 'k-', 'LineWidth', 2)
+    plot(l_anim(iter)*sin(th_anim(iter)), l_anim(iter)*cos(th_anim(iter)), 'rs', 'MarkerSize', 10, 'MarkerFaceColor', 'r')
     axis equal
+    axis auto
     axis([-5 5 -2 2]);
     drawnow;
 
