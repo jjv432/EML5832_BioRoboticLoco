@@ -6,7 +6,7 @@ m2 = 10;
 g = 9.8;
 L = 1;
 k = 500;
-b = 1;
+b = 20;
 
 % Define generalized coords as sym vars and funs
 syms t l(t) th(t)
@@ -48,8 +48,11 @@ dL_ddq_dt = diff(dL_ddq, t);
 
 % LHS of EL eqn
 % EL_LHS = dL_ddq_dt - dL_dq;
-Fdamp = b*sqrt(([1 0]*r1)^2 + ([0 1]*r1)^2 );
-EL_LHS = dL_ddq_dt - dL_dq - [Fdamp; 0];
+EL_LHS = dL_ddq_dt - dL_dq;
+
+% RHS of EL eqn
+Fdamp = - b * sqrt(([1 0]*dr1)^2 + ([0 1]*dr1)^2);
+EL_RHS = [Fdamp; 0];
 
 % Solve for ddq (accelerations)
 % Substitute sym vars in place of sym funs
@@ -65,13 +68,25 @@ EL_LHS = subs(EL_LHS, diff(th, t, t), ddth_);
 EL_LHS = subs(EL_LHS, diff(th, t), dth_);
 EL_LHS = subs(EL_LHS, th, th_);
 
+EL_RHS = subs(EL_RHS, diff(l, t, t), ddl_);
+EL_RHS = subs(EL_RHS, diff(l, t), dl_);
+EL_RHS = subs(EL_RHS, l, l_);
+
+EL_RHS = subs(EL_RHS, diff(th, t, t), ddth_);
+EL_RHS = subs(EL_RHS, diff(th, t), dth_);
+EL_RHS = subs(EL_RHS, th, th_);
+
 % Need to make EL_LHS non-time-varying
 EL_LHS_(1, 1) = [1 0]*EL_LHS;
 EL_LHS_(2, 1) = [0 1]*EL_LHS;
 
+% Need to make EL_RHS non-time-varying
+EL_RHS_(1, 1) = [1 0]*EL_RHS;
+EL_RHS_(2, 1) = [0 1]*EL_RHS;
+
 % Solve for accels
 ddq_ = [ddl_; ddth_];
-ddq_solve = solve(EL_LHS_ == [0;0], ddq_); % store accels
+ddq_solve = solve(EL_LHS_ == EL_RHS, ddq_); % store accels
 
 % ddq_solve.dds_(1)
 
@@ -89,8 +104,8 @@ ddth_fun = matlabFunction(ddth_solve, 'Vars', {x});
 odefun = @(time, state) [state(2); dds_fun(state); state(4); ddth_fun(state)]; % derivative of states 
 
 % sim using ode45
-tspan = [0 10];
-x0 = [L; 0; -pi/4; 1];
+tspan = [0 2];
+x0 = [L; .5; 0; 0];
 [t_sim, x_sim] = ode45(odefun, tspan, x0);
 
 % Plot of position and angle
@@ -110,6 +125,7 @@ t_anim = tspan(1):1/FPS:tspan(2);
 l_anim = interp1(t_sim, x_sim(:, 1), t_anim);
 th_anim = interp1(t_sim, x_sim(:, 3), t_anim);
 
+max(x_sim(:,1))
 figure();
 for iter = 1:numel(t_anim)
     cla; % clear axes
@@ -123,3 +139,4 @@ for iter = 1:numel(t_anim)
     drawnow;
 
 end
+
