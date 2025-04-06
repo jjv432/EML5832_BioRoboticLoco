@@ -5,6 +5,7 @@ m1 = 2;
 m2 = 10;
 g = 9.8;
 L = 1;
+k = 1;
 
 % Define generalized coords as sym vars and funs
 syms t l(t) th(t)
@@ -18,22 +19,23 @@ ddq = diff(q, t, t); % gen accels
 
 % Create vectors pointing to mass centers
 r1 = [l; 0];
-r2 = [l + L*sin(th); -L*cos(th)];
+% r2 = [l + L*sin(th); -L*cos(th)];
 
 dr1 = diff(r1, t);
-dr2 = diff(r2, t);
+% dr2 = diff(r2, t);
 
 % Kinetic energy
 T1 = (1/2)*m1*dr1.'*dr1;
-T2 = (1/2)*m2*dr2.'*dr2;
+% T2 = (1/2)*m2*dr2.'*dr2;
 
-T = T1 + T2;
+% T = T1 + T2;
+T = T1;
 
 % Potential Energy
-V1 = m1*g*[0, 1]*r1;
-V2 = m2*g*[0, 1]*r2;
+V1 = m1*g*[0, 1]*r1 + (1/2)*k*(norm(r1) - L)^2;
+% V2 = m2*g*[0, 1]*r2;
 
-V = V1 + V2;
+V = V1;
 
 % Lagrange
 Lagr = T - V;
@@ -49,12 +51,12 @@ EL_LHS = dL_ddq_dt - dL_dq;
 % Solve for ddq (accelerations)
 % Substitute sym vars in place of sym funs
 % subs(EL_LHS, diff(s,t), ds);
-syms s_ ds_ dds_ th_ dth_ ddth_ % non-time-varying equivalents
+syms l_ dl_ ddl_ th_ dth_ ddth_ % non-time-varying equivalents
 
 % Need to do a, then v, then s. Otherwise, it'll mess up the derivatives
-EL_LHS = subs(EL_LHS, diff(l, t, t), dds_);
-EL_LHS = subs(EL_LHS, diff(l, t), ds_);
-EL_LHS = subs(EL_LHS, l, s_);
+EL_LHS = subs(EL_LHS, diff(l, t, t), ddl_);
+EL_LHS = subs(EL_LHS, diff(l, t), dl_);
+EL_LHS = subs(EL_LHS, l, l_);
 
 EL_LHS = subs(EL_LHS, diff(th, t, t), ddth_);
 EL_LHS = subs(EL_LHS, diff(th, t), dth_);
@@ -65,18 +67,18 @@ EL_LHS_(1, 1) = [1 0]*EL_LHS;
 EL_LHS_(2, 1) = [0 1]*EL_LHS;
 
 % Solve for accels
-ddq_ = [dds_; ddth_];
+ddq_ = [ddl_; ddth_];
 ddq_solve = solve(EL_LHS_ == [0;0], ddq_); % store accels
 
 % ddq_solve.dds_(1)
 
 %% Simulate our eom
 % x = [s, s_d, th, th_d]'
-dds_solve = ddq_solve.dds_;
+dds_solve = ddq_solve.ddl_;
 ddth_solve = ddq_solve.ddth_;
 
 % Create a fn that returns the acceleration of s when fed a state vector
-x = [s_; ds_; th_; dth_];
+x = [l_; dl_; th_; dth_];
 dds_fun = matlabFunction(dds_solve, 'Vars', {x});
 ddth_fun = matlabFunction(ddth_solve, 'Vars', {x});
 
@@ -85,7 +87,7 @@ odefun = @(time, state) [state(2); dds_fun(state); state(4); ddth_fun(state)]; %
 
 % sim using ode45
 tspan = [0 10];
-x0 = [0; 0; 3*pi/4; 0];
+x0 = [2; 0; 0; 0];
 [t_sim, x_sim] = ode45(odefun, tspan, x0);
 
 % Plot of position and angle
