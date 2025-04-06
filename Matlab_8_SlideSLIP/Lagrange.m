@@ -18,7 +18,7 @@ ddq = diff(q, t, t); % gen accels
 %% Step 2: Calculate Energies and Lagrangian
 
 % Create vectors pointing to mass centers
-r1 = [l; 0];
+r1 = l*[cos(th); sin(th)];
 % r2 = [l + L*sin(th); -L*cos(th)];
 
 dr1 = diff(r1, t);
@@ -87,7 +87,7 @@ odefun = @(time, state) [state(2); dds_fun(state); state(4); ddth_fun(state)]; %
 
 % sim using ode45
 tspan = [0 10];
-x0 = [2; 0; 0; 0];
+x0 = [2; 0; pi/4; 0];
 [t_sim, x_sim] = ode45(odefun, tspan, x0);
 
 % Plot of position and angle
