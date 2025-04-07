@@ -17,14 +17,13 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
     T = [];
 
-
     state = 'stance';
 
     % If you're running newton rhapson, only run each state once
     if nr_bool
         duration = 2;
     else
-        duration = 4;
+        duration = 8;
     end
 
     % Running 'duration' number of states
@@ -129,7 +128,8 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 % Find init for the next state
                 l_d0 = vz * cos(phi) + vx * sin(phi);
                 phi_d0 = l0*(vz*sin(phi) + vx*cos(phi));
-                init = [l0; l_d0; phi; params.phi_d_0];
+                % init = [l0; l_d0; phi; params.phi_d_0];
+                init = [l0; l_d0; phi; phi_d0];
                 state = 'stance';
 
             case 'sliding'
