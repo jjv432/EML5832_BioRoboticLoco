@@ -31,9 +31,9 @@ function func = slide_dynamics(t,y, params)
 
     % Making sure directions of forces are perserved; lazy fix
     % Not sure if this is flipped
-    if phi > 0
+    if phi < 0
         x_dd = (Fleg_x - Ffk)/m;
-    elseif phi <= 0
+    elseif phi >= 0
         x_dd = (Ffk -Fleg_x)/m;
     end
 
