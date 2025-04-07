@@ -88,7 +88,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                     % Set 'state' and the init vector for the next state
                     % For sliding, need l, l_d, phi, phi_d, x, and x_d Need
                     % x because have 3rd EOM for sliding
-                    init = [l_vals(end); l_d_vals(end); phi_vals(end); phi_d_vals(end); x_vals(end); x_d_vals(end)];
+                    init = [l_vals(end); l_d_vals(end); phi_vals(end); phi_d_vals(end); x_vals(end) + x_offset; x_d_vals(end)];
                     state = 'sliding';
 
                 end
