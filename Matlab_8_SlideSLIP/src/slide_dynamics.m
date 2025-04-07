@@ -26,7 +26,7 @@ function func = slide_dynamics(t,y, params)
     Fleg_y = Fleg*cos(phi);
     Ffk = abs(Fleg_y * muK);
 
-    l_dd = l*phi_d^2 - g*cos(phi) - (k/m)*(l - l0) - (b/m)*l_d;
+    l_dd = l*phi_d^2 - g*cos(phi) - Fleg/m - Fleg*sin(phi)*muK/m;
     % phi_dd = (1/l)*(-2*l_d*phi_d) + (1/l)*(g*sin(phi)) + t_hip/(m*l^2) - (Fleg/m + Fleg*cos(phi)*sin(phi)*muK/m);
     phi_dd = (1/l)*(-2*l_d*phi_d) + (1/l)*(g*sin(phi)) + t_hip/(m*l^2) - Fleg*cos(phi)*cos(phi)*muK/(m*l);
 
