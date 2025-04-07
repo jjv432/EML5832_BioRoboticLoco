@@ -29,9 +29,9 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     % Running 'duration' number of states
     for i = 1:duration
 
-        if i > 2
-            params.t_hip = 0;
-        end
+        % if i > 2
+        %     params.t_hip = 0;
+        % end
 
         switch state
 
