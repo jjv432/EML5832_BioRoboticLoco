@@ -19,8 +19,26 @@ function [position,isterminal,direction] = slide_event_func(t,y, params)
 
     Fleg = k*(l0 - l) - b*l_d;
 
-    % Assuming can only go to flight from sliding. May not be accurate
-    position = Fleg*cos(phi) + (1/l)*t_hip*sin(phi);
-    isterminal = 1;
-    direction = -1;
+    % Transition to flight
+    position(1) = Fleg*cos(phi) + (1/l)*t_hip*sin(phi);
+    isterminal(1) = 1;
+    direction(1) = -1;
+
+    % Transition to stance
+    Fleg = k*(l0 - l) - b*l_d;
+
+    persistent muK
+    if isempty(muK)
+        muK = params.muK;
+    end
+
+    Fleg_x = abs(Fleg*sin(phi));
+    Fleg_y = abs(Fleg*cos(phi));
+    Ffk = Fleg_y * muK;
+
+    position(2) = Ffk - Fleg_x;
+    isterminal(2) = 1;
+    direction(2) = 1;
+
 end
+
