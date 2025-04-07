@@ -43,4 +43,5 @@ ylabel("z-position, m")
 title("SLIP-Model Position")
 grid on
 legend("Trajectory", "Max Height", "Ground", "Location", "bestoutside");
-ylim([-.1 1.8]);
+% ylim([-.1 1.8]);
+axis auto
