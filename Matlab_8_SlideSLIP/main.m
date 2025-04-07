@@ -10,7 +10,7 @@ format compact;
 addpath("src");
 
 % Show Animation?
-animate = 0;
+animate = 1;
 
 params = getParams();
 

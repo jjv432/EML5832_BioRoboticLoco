@@ -30,6 +30,7 @@ function func = slide_dynamics(t,y, params)
     phi_dd = (1/l)*(-2*l_d*phi_d) + (1/l)*(g*sin(phi)) + t_hip/(m*l^2) - (Fleg/m + Fleg*cos(phi)*sin(phi)*muK/m);
 
     % Making sure directions of forces are perserved; lazy fix
+    % Not sure if this is flipped
     if phi > 0
         x_dd = (Fleg_x - Ffk)/m;
     elseif phi <= 0

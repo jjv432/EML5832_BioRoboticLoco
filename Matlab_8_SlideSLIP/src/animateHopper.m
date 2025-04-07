@@ -64,7 +64,7 @@ stance_x_vals). Something about the animation
     persistent stance_x_start;
     
 
-    for i = 2:length(X)
+    for i = 2:5:length(X)
 
         if T(i, 2) % in stance
             if transition == 1
