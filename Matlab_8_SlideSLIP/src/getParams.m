@@ -12,6 +12,6 @@ function params = getParams()
     params.l_d_0 = -3.5;
     params.muS = .55; % Good for sliding
     % params.muS = 5; % Good for sticking
-    params.muK = (.75)*params.muS;
+    params.muK = (.5)*params.muS;
 
 end
