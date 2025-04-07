@@ -29,9 +29,8 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     % Running 'duration' number of states
     for i = 1:duration
 
-        % This doesn't affect performance as of now
-        % if i > 2
-        %     params.t_hip = 0;
+        % if i > 20
+        %     params.t_hip = params.t_hip/2;
         % end
 
         switch state
@@ -138,7 +137,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
             case 'sliding'
 
                 % Run the stance simulation
-                [T1, Y1] = ode45(@(T1, Y1) slide_dynamics(T1, Y1, params), time, init, slide_options);
+                [T1, Y1, te, ye, ie] = ode45(@(T1, Y1) slide_dynamics(T1, Y1, params), time, init, slide_options);
 
                 % Parse out the results
                 l_vals = Y1(:, 1);

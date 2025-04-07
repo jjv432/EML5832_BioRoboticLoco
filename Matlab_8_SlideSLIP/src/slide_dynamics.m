@@ -1,16 +1,16 @@
 function func = slide_dynamics(t,y, params)
 
     % Values that won't change
-    persistent b m k l0 g t_hip muK
+    persistent b m k l0 g muK
     if isempty(b)
         b = params.b;
         k = params.k;
         m = params.m;
         l0 = params.l0;
         g = params.g;
-        t_hip = params.t_hip;
         muK = params.muK;
     end
+    t_hip = params.t_hip;
 
     % Parse out the states
     l = y(1);
@@ -28,14 +28,14 @@ function func = slide_dynamics(t,y, params)
 
     l_dd = l*phi_d^2 - g*cos(phi) - Fleg/m - Fleg*sin(phi)*muK/m;
     % phi_dd = (1/l)*(-2*l_d*phi_d) + (1/l)*(g*sin(phi)) + t_hip/(m*l^2) - (Fleg/m + Fleg*cos(phi)*sin(phi)*muK/m);
-    phi_dd = (1/l)*(-2*l_d*phi_d) + (1/l)*(g*sin(phi)) + t_hip/(m*l^2) - Fleg*cos(phi)*muK/(m*l);
+    phi_dd = (1/l)*(-2*l_d*phi_d) + (1/l)*(g*sin(phi)) + t_hip/(m*l^2) + Fleg*cos(phi)*muK/(m*l^2);
 
     % Making sure directions of forces are perserved; lazy fix
     % Not sure if this is flipped
     if phi < 0
         x_dd = (Fleg_x - Ffk)/m;
     elseif phi >= 0
-        x_dd = (Ffk -Fleg_x)/m;
+        x_dd = -abs((Ffk - Fleg_x)/m);
     end
 
     func = [l_d; l_dd; phi_d; phi_dd; x_d; x_dd];

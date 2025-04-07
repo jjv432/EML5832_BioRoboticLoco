@@ -8,8 +8,8 @@ function func = stance_dynamics(t,y, params)
         m = params.m;
         l0 = params.l0;
         g = params.g;
-        t_hip = params.t_hip;
     end
+    t_hip = params.t_hip;
 
     % Parsing out the states
     l = y(1);
