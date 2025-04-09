@@ -17,9 +17,10 @@ function [position,isterminal,direction] = stance_event_func(t,y, params)
 
     Fleg = k*(l0 - l) - b*l_d;
 
-    position(1) = Fleg*cos(phi) + (1/l)*t_hip*sin(phi);
+    % Transition to flight
+    position(1) = l - l0;
     isterminal(1) = 1;
-    direction(1) = -1;
+    direction(1) = 1;
 
     % Event for a transistion to sliding
     

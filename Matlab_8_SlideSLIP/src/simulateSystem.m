@@ -10,7 +10,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
     % Setting empty arrays for all the data that we want to store
     Kinematics.X = [];
-    Kinematics.X_Slide = [];
+    Kinematics.S = [];
     Kinematics.Z = [];
     Kinematics.Phi = [];
     Kinematics.L = [];
@@ -23,22 +23,18 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     if nr_bool
         duration = 2;
     else
-        duration = 50;
+        duration = 20;
     end
 
     % Running 'duration' number of states
     for i = 1:duration
-
-        % if i > 20
-        %     params.t_hip = params.t_hip/2;
-        % end
 
         switch state
 
             case 'stance'
 
                 % Run the stance simulation
-                [T1, Y1, te, ye, ie] = ode45(@(T1, Y1) stance_dynamics(T1, Y1, params), time, init, stance_options);
+                [T1, Y1, ~, ~, ie] = ode45(@(T1, Y1) stance_dynamics(T1, Y1, params), time, init, stance_options);
 
                 % Parse out the results
                 l_vals = Y1(:, 1);
@@ -60,15 +56,13 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 % Solve for x and z positions and velocities
                 x_vals = l_vals .* sin(phi_vals);
                 z_vals = l_vals .* cos(phi_vals);
-                x_d_vals = l_vals.*phi_d_vals.*sin(phi_vals) + l_d_vals.*sin(phi_vals);
-                z_d_vals = l_vals.*phi_d_vals.*cos(phi_vals) + l_d_vals.*cos(phi_vals);
 
                 % Normalize the x position
                 x_vals = x_vals - x_vals(1);
 
                 % Store the T, x, and z positions for plotting
                 Kinematics.X = [Kinematics.X; x_vals(1:end-1) + x_offset];
-                Kinematics.X_Slide = [Kinematics.X_Slide; zeros(numel(x_vals(1:end-1)), 1)]; % You don't slide in stance
+                Kinematics.S = [Kinematics.S; zeros(numel(x_vals(1:end-1)), 1)]; % You don't slide in stance
                 Kinematics.Z = [Kinematics.Z; z_vals(1:end-1)];
                 Kinematics.Phi = [Kinematics.Phi; phi_vals(1:end-1)];
                 Kinematics.L = [Kinematics.L; l_vals(1:end-1)];
@@ -97,7 +91,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
             case 'flight'
 
-                [T1, Y1, te, ye, ie] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
+                [T1, Y1] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
 
                 % Parse out the results
                 x_vals = Y1(:, 1);
@@ -114,10 +108,8 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                     t_offset = 0;
                 end
 
-                % Is it better to use x_offset here?
-                % Kinematics.X = [Kinematics.X; x_vals(1:end-1) + x_offset];
                 Kinematics.X = [Kinematics.X; x_vals(1:end-1)];
-                Kinematics.X_Slide = [Kinematics.X_Slide; zeros(numel(x_vals(1:end-1)), 1)]; % not sliding
+                Kinematics.S = [Kinematics.S; zeros(numel(x_vals(1:end-1)), 1)]; % not sliding
                 Kinematics.Z = [Kinematics.Z; z_vals(1:end-1)];
                 Kinematics.Phi = [Kinematics.Phi; zeros(numel(x_vals) - 1, 1)];
                 Kinematics.L = [Kinematics.L; zeros(numel(x_vals) - 1, 1)];
@@ -136,7 +128,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
             case 'sliding'
 
                 % Run the stance simulation
-                [T1, Y1, te, ye, ie] = ode45(@(T1, Y1) slide_dynamics(T1, Y1, params), time, init, slide_options);
+                [T1, Y1, ~, ~, ie] = ode45(@(T1, Y1) slide_dynamics(T1, Y1, params), time, init, slide_options);
 
                 % Parse out the results
                 l_vals = Y1(:, 1);
@@ -159,15 +151,13 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 % Solve for x and z positions and velocities
                 x_vals = l_vals .* sin(phi_vals);
                 z_vals = l_vals .* cos(phi_vals);
-                x_d_vals = l_vals.*phi_d_vals.*sin(phi_vals) + l_d_vals.*sin(phi_vals);
-                z_d_vals = l_vals.*phi_d_vals.*cos(phi_vals) + l_d_vals.*cos(phi_vals);
 
                 % Normalize the x_vals
                 x_vals = x_vals - x_vals(1);
 
                 % Store the T, x, and z positions for plotting
-                Kinematics.X = [Kinematics.X; x_vals(1:end-1) + x_offset + x_vals_sliding(1:end-1)- x_vals_sliding(1)];
-                Kinematics.X_Slide = [Kinematics.X_Slide; x_vals_sliding(1:end-1)- x_vals_sliding(1)];
+                Kinematics.X = [Kinematics.X; x_vals(1:end-1) + x_offset + s_vals(1:end-1)- s_vals(1)];
+                Kinematics.S = [Kinematics.S; s_vals(1:end-1)- s_vals(1)];
                 Kinematics.Z = [Kinematics.Z; z_vals(1:end-1)];
                 Kinematics.Phi = [Kinematics.Phi; phi_vals(1:end-1)];
                 Kinematics.L = [Kinematics.L; l_vals(1:end-1)];
@@ -177,8 +167,8 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                     % Set 'state' and the init vector for the next state
                     x_d_init = l_d_vals(end)*sin(phi_vals(end)) + phi_d_vals(end)*l_vals(end)*cos(phi_vals(end)) + s_d_vals(end);
                     z_d_init = l_d_vals(end)*cos(phi_vals(end)) + phi_d_vals(end)*l_vals(end)*sin(phi_vals(end));
-                    x_init = l*sin(phi_vals(end)) + s_vals(end);
-                    z_init = l*cos(phi);
+                    x_init = l_vals(end)*sin(phi_vals(end)) + s_vals(end);
+                    z_init = l_vals(end)*cos(phi_vals(end));
                     init = [x_init; x_d_init; z_init; z_d_init];
                     state = 'flight';
                 elseif ie ==2
