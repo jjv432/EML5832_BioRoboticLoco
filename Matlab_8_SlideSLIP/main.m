@@ -73,13 +73,13 @@ h2 = [];
 while ~isempty(slide_tmp) && idx <= numel(slide_tmp)
 
     if slide_tmp(idx) - slide_tmp(idx -1) ~=1
-      
+
         if isempty(h2)
             h2 = plot(slideX(slide_tmp(1:idx-1)), slideZ(slide_tmp(1:idx-1)), '-.g', "LineWidth", 2);
-            
+
         else
             plot(slideX(slide_tmp(1:idx-1)), slideZ(slide_tmp(1:idx-1)), '-.g', "LineWidth", 2);
-            
+
         end
         slide_tmp = slide_tmp(idx:end);
         idx = 2;
@@ -109,7 +109,7 @@ while ~isempty(stance_tmp) && idx <= numel(stance_tmp)
 
 end
 
-yline(max(Kinematics.Z), '--k', "LineWidth", 2);
+% yline(max(Kinematics.Z), '--k', "LineWidth", 2);
 yline(0, 'k', "LineWidth", 3);
 xlabel("x-position, m")
 ylabel("z-position, m")

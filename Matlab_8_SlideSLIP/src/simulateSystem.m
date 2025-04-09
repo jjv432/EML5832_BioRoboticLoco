@@ -29,6 +29,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     % Running 'duration' number of states
     for i = 1:duration
 
+        disp(state)
         switch state
 
             case 'stance'
@@ -58,7 +59,9 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 z_vals = l_vals .* cos(phi_vals);
 
                 % Normalize the x position
-                x_vals = x_vals - x_vals(1);
+                % if i > 1
+                % x_vals = x_vals - x_vals(1);
+                % end
 
                 % Store the T, x, and z positions for plotting
                 Kinematics.X = [Kinematics.X; x_vals(1:end) + x_offset];
@@ -108,7 +111,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                     t_offset = 0;
                 end
 
-                Kinematics.X = [Kinematics.X; x_vals(1:end)-x_offset];
+                Kinematics.X = [Kinematics.X; x_vals(1:end)];
                 Kinematics.S = [Kinematics.S; zeros(numel(x_vals(1:end)), 1)]; % not sliding
                 Kinematics.Z = [Kinematics.Z; z_vals(1:end)];
                 Kinematics.Phi = [Kinematics.Phi; zeros(numel(x_vals), 1)];
@@ -121,7 +124,10 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
                 % Find init for the next state
                 l_d_init = vz * cos(phi_vals(end)) + vx * sin(phi_vals(end));
-                phi_d_init = (1/l0)*(vz*sin(phi_vals(end)) + vx*cos(phi_vals(end)));
+                
+                % phi_d_init = sqrt((vz*sin(phi_vals(end))/l0)^2 + (vx*cos(phi_vals(end))/l0)^2);
+                phi_d_init = (vz*sin(phi_vals(end)))/l0 - (vx*cos(phi_vals(end)))/l0;
+
                 init = [l0; l_d_init; params.phi_0; phi_d_init];
                 state = 'stance';
 
@@ -156,7 +162,8 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 x_vals = x_vals - x_vals(1);
 
                 % Store the T, x, and z positions for plotting
-                Kinematics.X = [Kinematics.X; x_vals(1:end) + x_offset + s_vals(1:end)- s_vals(1)];
+                % Kinematics.X = [Kinematics.X; x_vals(1:end) + x_offset + s_vals(1:end)- s_vals(1)];
+                Kinematics.X = [Kinematics.X; x_vals(1:end) + x_offset];
                 Kinematics.S = [Kinematics.S; s_vals(1:end)- s_vals(1)];
                 Kinematics.Z = [Kinematics.Z; z_vals(1:end)];
                 Kinematics.Phi = [Kinematics.Phi; phi_vals(1:end)];
