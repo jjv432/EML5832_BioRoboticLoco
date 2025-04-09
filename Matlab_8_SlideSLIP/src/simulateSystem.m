@@ -128,8 +128,8 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 vz = z_d_vals(end);
 
                 % Find init for the next state
-                l_d_init = vz * cos(phi) + vx * sin(phi);
-                phi_d_init = (1/l0)*(vz*sin(phi) + vx*cos(phi));
+                l_d_init = vz * cos(phi_vals(end)) + vx * sin(phi_vals(end));
+                phi_d_init = (1/l0)*(vz*sin(phi_vals(end)) + vx*cos(phi_vals(end)));
                 init = [l0; l_d_init; params.phi_0; phi_d_init];
                 state = 'stance';
 
