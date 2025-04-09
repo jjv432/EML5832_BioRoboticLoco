@@ -23,7 +23,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     if nr_bool
         duration = 2;
     else
-        duration = 20;
+        duration = 3;
     end
 
     % Running 'duration' number of states
@@ -61,12 +61,12 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 x_vals = x_vals - x_vals(1);
 
                 % Store the T, x, and z positions for plotting
-                Kinematics.X = [Kinematics.X; x_vals(1:end-1) + x_offset];
-                Kinematics.S = [Kinematics.S; zeros(numel(x_vals(1:end-1)), 1)]; % You don't slide in stance
-                Kinematics.Z = [Kinematics.Z; z_vals(1:end-1)];
-                Kinematics.Phi = [Kinematics.Phi; phi_vals(1:end-1)];
-                Kinematics.L = [Kinematics.L; l_vals(1:end-1)];
-                T = [T; T1(1:end-1) + t_offset, ones(numel(T1)-1, 1), zeros(numel(T1)-1, 1)];
+                Kinematics.X = [Kinematics.X; x_vals(1:end) + x_offset];
+                Kinematics.S = [Kinematics.S; zeros(numel(x_vals(1:end)), 1)]; % You don't slide in stance
+                Kinematics.Z = [Kinematics.Z; z_vals(1:end)];
+                Kinematics.Phi = [Kinematics.Phi; phi_vals(1:end)];
+                Kinematics.L = [Kinematics.L; l_vals(1:end)];
+                T = [T; T1(1:end) + t_offset, ones(numel(T1), 1), zeros(numel(T1), 1)];
 
                 % if the flight condition caused the ode to stop
                 if ie == 1
@@ -108,12 +108,12 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                     t_offset = 0;
                 end
 
-                Kinematics.X = [Kinematics.X; x_vals(1:end-1)];
-                Kinematics.S = [Kinematics.S; zeros(numel(x_vals(1:end-1)), 1)]; % not sliding
-                Kinematics.Z = [Kinematics.Z; z_vals(1:end-1)];
-                Kinematics.Phi = [Kinematics.Phi; zeros(numel(x_vals) - 1, 1)];
-                Kinematics.L = [Kinematics.L; zeros(numel(x_vals) - 1, 1)];
-                T = [T; T1(1:end-1) + t_offset, zeros(numel(T1)-1, 1), zeros(numel(T1)-1, 1)]; % This is helpful to keep track of state based on each column
+                Kinematics.X = [Kinematics.X; x_vals(1:end)-x_offset];
+                Kinematics.S = [Kinematics.S; zeros(numel(x_vals(1:end)), 1)]; % not sliding
+                Kinematics.Z = [Kinematics.Z; z_vals(1:end)];
+                Kinematics.Phi = [Kinematics.Phi; zeros(numel(x_vals), 1)];
+                Kinematics.L = [Kinematics.L; zeros(numel(x_vals), 1)];
+                T = [T; T1(1:end) + t_offset, zeros(numel(T1), 1), zeros(numel(T1), 1)]; % This is helpful to keep track of state based on each column
 
                 l0 = params.l0;
                 vx = x_d_vals(end);
@@ -156,12 +156,12 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 x_vals = x_vals - x_vals(1);
 
                 % Store the T, x, and z positions for plotting
-                Kinematics.X = [Kinematics.X; x_vals(1:end-1) + x_offset + s_vals(1:end-1)- s_vals(1)];
-                Kinematics.S = [Kinematics.S; s_vals(1:end-1)- s_vals(1)];
-                Kinematics.Z = [Kinematics.Z; z_vals(1:end-1)];
-                Kinematics.Phi = [Kinematics.Phi; phi_vals(1:end-1)];
-                Kinematics.L = [Kinematics.L; l_vals(1:end-1)];
-                T = [T; T1(1:end-1) + t_offset, zeros(numel(T1)-1, 1), ones(numel(T1)-1, 1)];
+                Kinematics.X = [Kinematics.X; x_vals(1:end) + x_offset + s_vals(1:end)- s_vals(1)];
+                Kinematics.S = [Kinematics.S; s_vals(1:end)- s_vals(1)];
+                Kinematics.Z = [Kinematics.Z; z_vals(1:end)];
+                Kinematics.Phi = [Kinematics.Phi; phi_vals(1:end)];
+                Kinematics.L = [Kinematics.L; l_vals(1:end)];
+                T = [T; T1(1:end) + t_offset, zeros(numel(T1), 1), ones(numel(T1), 1)];
 
                 if ie == 1
                     % Set 'state' and the init vector for the next state
