@@ -18,7 +18,10 @@ params = getParams();
 % time = 0:.01:30;
 time = [0 30];
 
-x0 =[params.l0; params.l_d_0; params.phi_0; params.phi_d_0]; % this was our initial 
+% x0 =[params.l0; params.l_d_0; params.phi_0; params.phi_d_0]; % this was our initial 
+
+% x, x_d, z, z_d
+x0 =[0; 4; 2; -1]; % this was our initial 
 
 
 %% Running stability functions
