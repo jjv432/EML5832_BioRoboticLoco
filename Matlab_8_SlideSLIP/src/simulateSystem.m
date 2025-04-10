@@ -23,7 +23,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     if nr_bool
         duration = 6;
     else
-        duration = 10;
+        duration = 50;
     end
 
     % Running 'duration' number of states
