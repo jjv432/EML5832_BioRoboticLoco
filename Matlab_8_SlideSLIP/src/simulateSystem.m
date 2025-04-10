@@ -1,4 +1,4 @@
-function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, init)
+function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, init_init)
 
 
     % Ending Conditions for ODE45
@@ -14,16 +14,17 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     Kinematics.Z = [];
     Kinematics.Phi = [];
     Kinematics.L = [];
-    apex_state = 1e6*[1 1 1 1];
 
+    apex_state = [];
     flight_counter = 0;
     T = [];
 
     state = 'flight';
+    init = init_init;
 
     % If you're running newton rhapson, only run each state once
     if nr_bool
-        duration = 4;
+        duration = 8;
     else
         duration = 20;
     end
@@ -96,8 +97,12 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 
                 flight_counter = flight_counter + 1;
 
+                if flight_counter == 1
+                    apex_state = init_init + .1;
+                end
+
                 if flight_counter == 2 && ~isempty(ye)
-                    apex_state = ye(1, :);
+                    apex_state = ye(1, :)';
                 end
                 % Parse out the results
                 x_vals = Y1(:, 1);

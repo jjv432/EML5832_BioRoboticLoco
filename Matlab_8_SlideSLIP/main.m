@@ -21,12 +21,12 @@ time = [0 30];
 % x0 =[params.l0; params.l_d_0; params.phi_0; params.phi_d_0]; % this was our initial 
 
 % x, x_d, z, z_d
-x0 =[0; 4; 2; 0]; % this was our initial 
+x0 =[0; 2; 1; 0]; % this was our initial 
 
 
 %% Running stability functions
 % Running newton raphson to get a fixed point
-stabilityBool = 1;
+stabilityBool = 0;
 if stabilityBool
 fixedPoint = newtonRaphson(params, time, x0);
 

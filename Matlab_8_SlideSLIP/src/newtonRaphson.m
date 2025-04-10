@@ -8,6 +8,8 @@ function fixedPoint = newtonRaphson(params, time, x0)
     del = 1e-5;
     nr_max_iter = 200;
 
+    % x0 =[params.l0; params.l_d_0; params.phi_0; params.phi_d_0]; % this was our initial
+
     %{
 We're comparing the initial stance parameters, so the simulation needs to
 return the same parameters after the next heel strike occurs. Going to
@@ -15,7 +17,7 @@ abandon the idea of comparing the flight stances for now.
     %}
 
     [~, ~, R] = simulateSystem(params, time, 1, x0);
-    E = R' - x0;
+    E = R - x0;
     Error = norm(E);
 
     while (Error > tol) && (stallIterations < nr_max_iter)
@@ -27,13 +29,13 @@ abandon the idea of comparing the flight stances for now.
             x0(i) = x0(i) -2*del;
             [~, ~,R2] = simulateSystem(params, time, 1, x0);
 
-            E2 = R2' - (x0);
+            E2 = R2 - (x0);
 
             x0(i) = x0(i) + 2*del;
-            E1 = R1' - (x0 + del);
+            E1 = R1 - (x0 + del);
 
             [~, ~, tmp] = simulateSystem(params, time, 1, x0);
-            Ex0 =  tmp' - x0;
+            Ex0 =  tmp - x0;
             slope(:, i) = (E1 - E2) / (2 * del);
             x0(i) = x0(i) - del;
         end
