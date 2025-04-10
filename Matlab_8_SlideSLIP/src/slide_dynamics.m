@@ -35,7 +35,7 @@ function func = slide_dynamics(t,y, params)
     if phi < 0
         s_dd = (Fleg_x - Ff_x)/m;
     elseif phi >= 0
-        s_dd = -abs((Ff_x - Fleg_x)/m);
+        s_dd = (Ff_x - Fleg_x)/m;
     end
 
     func = [l_d; l_dd; phi_d; phi_dd; s_d; s_dd];

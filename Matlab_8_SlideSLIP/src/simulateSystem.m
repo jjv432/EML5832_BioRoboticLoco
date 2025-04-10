@@ -164,8 +164,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
                 % Store the T, x, and z positions for plotting
                 % Kinematics.X = [Kinematics.X; x_vals(1:end) + x_offset + s_vals(1:end)- s_vals(1)];
-                Kinematics.X = [Kinematics.X; x_vals(1:end) + x_offset];
-                Kinematics.S = [Kinematics.S; s_vals(1:end)- s_vals(1)];
+                Kinematics.X = [Kinematics.X; x_vals + x_offset];
                 Kinematics.Z = [Kinematics.Z; z_vals(1:end)];
                 Kinematics.Phi = [Kinematics.Phi; phi_vals(1:end)];
                 Kinematics.L = [Kinematics.L; l_vals(1:end)];
@@ -175,7 +174,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                     % Set 'state' and the init vector for the next state
                     x_d_init = l_d_vals(end)*sin(phi_vals(end)) + phi_d_vals(end)*l_vals(end)*cos(phi_vals(end)) + s_d_vals(end);
                     z_d_init = l_d_vals(end)*cos(phi_vals(end)) + phi_d_vals(end)*l_vals(end)*sin(phi_vals(end));
-                    x_init = l_vals(end)*sin(phi_vals(end)) + s_vals(end);
+                    x_init = l_vals(end)*sin(phi_vals(end)) + x_offset;
                     z_init = l_vals(end)*cos(phi_vals(end));
                     init = [x_init; x_d_init; z_init; z_d_init];
                     state = 'flight';
