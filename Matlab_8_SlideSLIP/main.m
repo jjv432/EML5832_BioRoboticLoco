@@ -54,9 +54,9 @@ while ~isempty(flight_tmp) && idx <= numel(flight_tmp)
 
     if flight_tmp(idx) - flight_tmp(idx -1) ~=1
         if isempty(h1)
-            h1 = plot(flightX(flight_tmp(1:idx-1)), flightZ(flight_tmp(1:idx-1)), '--.r', "LineWidth", 2);
+            h1 = plot(flightX(flight_tmp(1:idx-1)), flightZ(flight_tmp(1:idx-1)), 'r', "LineWidth", 2);
         else
-            plot(flightX(flight_tmp(1:idx-1)), flightZ(flight_tmp(1:idx-1)), '--.r', "LineWidth", 2);
+            plot(flightX(flight_tmp(1:idx-1)), flightZ(flight_tmp(1:idx-1)), 'r', "LineWidth", 2);
         end
         flight_tmp = flight_tmp(idx:end);
         idx = 2;
@@ -75,10 +75,10 @@ while ~isempty(slide_tmp) && idx <= numel(slide_tmp)
     if slide_tmp(idx) - slide_tmp(idx -1) ~=1
 
         if isempty(h2)
-            h2 = plot(slideX(slide_tmp(1:idx-1)), slideZ(slide_tmp(1:idx-1)), '-.g', "LineWidth", 2);
+            h2 = plot(slideX(slide_tmp(1:idx-1)), slideZ(slide_tmp(1:idx-1)), 'g', "LineWidth", 2);
 
         else
-            plot(slideX(slide_tmp(1:idx-1)), slideZ(slide_tmp(1:idx-1)), '-.g', "LineWidth", 2);
+            plot(slideX(slide_tmp(1:idx-1)), slideZ(slide_tmp(1:idx-1)), 'g', "LineWidth", 2);
 
         end
         slide_tmp = slide_tmp(idx:end);
@@ -97,9 +97,9 @@ while ~isempty(stance_tmp) && idx <= numel(stance_tmp)
 
     if stance_tmp(idx) - stance_tmp(idx -1) ~=1
         if isempty(h3)
-            h3 = plot(stanceX(stance_tmp(1:idx-1)), stanceZ(stance_tmp(1:idx-1)), '-.k', "LineWidth", 2);
+            h3 = plot(stanceX(stance_tmp(1:idx-1)), stanceZ(stance_tmp(1:idx-1)), 'k', "LineWidth", 2);
         else
-            plot(stanceX(stance_tmp(1:idx-1)), stanceZ(stance_tmp(1:idx-1)), '-.k', "LineWidth", 2);
+            plot(stanceX(stance_tmp(1:idx-1)), stanceZ(stance_tmp(1:idx-1)), 'k', "LineWidth", 2);
         end
         stance_tmp = stance_tmp(idx:end);
         idx = 2;

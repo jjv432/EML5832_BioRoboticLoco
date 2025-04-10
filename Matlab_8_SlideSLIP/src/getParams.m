@@ -6,10 +6,10 @@ function params = getParams()
     params.k = 100; %*
     params.g = 9.81;
     params.m = 1;  %*
-    params.t_hip = 10;  %*
+    params.t_hip = 15;  %*
     params.phi_0 = -pi/6;  %*
     params.phi_d_0 = 1.5;
-    params.l_d_0 = -4.5;
+    params.l_d_0 = -4;
     params.muS = .55; % Good for sliding
     params.muK = (.75)*params.muS;
 
