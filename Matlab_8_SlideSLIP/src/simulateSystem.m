@@ -14,16 +14,18 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     Kinematics.Z = [];
     Kinematics.Phi = [];
     Kinematics.L = [];
+    apex_state = 1e6*[1 1 1 1];
 
+    flight_counter = 0;
     T = [];
 
     state = 'flight';
 
     % If you're running newton rhapson, only run each state once
     if nr_bool
-        duration = 6;
-    else
         duration = 4;
+    else
+        duration = 20;
     end
 
     % Running 'duration' number of states
@@ -90,8 +92,13 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
             case 'flight'
 
-                [T1, Y1] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
+                [T1, Y1, te, ye, ie] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
                 
+                flight_counter = flight_counter + 1;
+
+                if flight_counter == 2 && ~isempty(ye)
+                    apex_state = ye(1, :);
+                end
                 % Parse out the results
                 x_vals = Y1(:, 1);
                 x_d_vals = Y1(:, 2);
@@ -202,7 +209,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     end
 
     if nr_bool
-        nr_results = stance_init;
+        nr_results = apex_state;
     else
         nr_results = [];
     end

@@ -21,14 +21,14 @@ time = [0 30];
 % x0 =[params.l0; params.l_d_0; params.phi_0; params.phi_d_0]; % this was our initial 
 
 % x, x_d, z, z_d
-x0 =[0; 4; 2; -1]; % this was our initial 
+x0 =[0; 4; 2; 0]; % this was our initial 
 
 
 %% Running stability functions
 % Running newton raphson to get a fixed point
-stabilityBool = 0;
+stabilityBool = 1;
 if stabilityBool
-fixedPoint = newtonRaphson(params, time);
+fixedPoint = newtonRaphson(params, time, x0);
 
 % Finding the stability of the fixed point
 maxEig = stabilityMeasure(params,time, fixedPoint)
