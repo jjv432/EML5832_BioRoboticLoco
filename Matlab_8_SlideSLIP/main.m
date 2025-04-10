@@ -21,7 +21,7 @@ time = [0 30];
 % x0 =[params.l0; params.l_d_0; params.phi_0; params.phi_d_0]; % this was our initial 
 
 % x, x_d, z, z_d
-x0 =[0; 2; 1.5; 0]; % this was our initial 
+x0 =[0; 1; 1.5; 0]; % this was our initial 
 
 
 %% Running stability functions
