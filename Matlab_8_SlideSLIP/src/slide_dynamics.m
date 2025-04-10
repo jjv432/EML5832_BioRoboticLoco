@@ -17,27 +17,29 @@ function func = slide_dynamics(t,y, params)
     l_d = y(2);
     phi = y(3);
     phi_d = y(4);
-    x = y(5);
-    x_d = y(6);
+    s = y(5);
+    s_d = y(6);
 
     % Adding sliding dynamics
     Fleg = k*(l0 - l) - b*l_d;
-    Fleg_x = abs(Fleg*sin(phi));
-    Fleg_y = Fleg*cos(phi);
-    Ffk = abs(Fleg_y * muK);
+    Fleg_x = Fleg*sin(phi);
+    Ff_leg = (m*g + Fleg*cos(phi))*muK*sin(phi);
+    Ff_x = (m*g + Fleg*cos(phi))*muK*cos(phi);
+    l_dd = l*phi_d^2 -g*cos(phi) - Fleg/m - Ff_leg/m;
 
-    l_dd = l*phi_d^2 - g*cos(phi) - Fleg/m - Fleg*sin(phi)*muK/m;
-    % phi_dd = (1/l)*(-2*l_d*phi_d) + (1/l)*(g*sin(phi)) + t_hip/(m*l^2) - (Fleg/m + Fleg*cos(phi)*sin(phi)*muK/m);
-    phi_dd = (1/l)*(-2*l_d*phi_d) + (1/l)*(g*sin(phi)) + t_hip/(m*l^2) + Fleg*cos(phi)*muK/(m*l^2);
+    t_fric = (m*g + Fleg*cos(phi))*muK*l*cos(phi);
+    phi_dd = (1/l)*(-2*l_d*phi_d) + (1/l)*(g*sin(phi)) + t_hip/(m*l*l) + t_fric/(m*l*l);
 
     % Making sure directions of forces are perserved; lazy fix
     % Not sure if this is flipped
     if phi < 0
-        x_dd = (Fleg_x - Ffk)/m;
+        s_dd = (Fleg_x - Ff_x)/m;
     elseif phi >= 0
-        x_dd = -abs((Ffk - Fleg_x)/m);
+        s_dd = (Ff_x - Fleg_x)/m;
+    else
+        s_dd = 0;
     end
 
-    func = [l_d; l_dd; phi_d; phi_dd; x_d; x_dd];
+    func = [l_d; l_dd; phi_d; phi_dd; s_d; s_dd];
 
 end

@@ -19,10 +19,14 @@ function [position,isterminal,direction] = slide_event_func(t,y, params)
 
     Fleg = k*(l0 - l) - b*l_d;
 
-    % Transition to flight
     position(1) = Fleg*cos(phi) + (1/l)*t_hip*sin(phi);
     isterminal(1) = 1;
     direction(1) = -1;
+    % 
+    % % Transition to flight
+    % position(1) = l - l0;
+    % isterminal(1) = 1;
+    % direction(1) = 1;
 
     % Transition to stance
     % Fleg = k*(l0 - l) - b*l_d;
