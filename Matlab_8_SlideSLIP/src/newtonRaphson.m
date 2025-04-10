@@ -6,7 +6,7 @@ function fixedPoint = newtonRaphson(params, time, x0)
     stallIterations = 0;
     tol = 1e-6;
     del = 1e-5;
-    nr_max_iter = 200;
+    nr_max_iter = 500;
 
     % x0 =[params.l0; params.l_d_0; params.phi_0; params.phi_d_0]; % this was our initial
 
