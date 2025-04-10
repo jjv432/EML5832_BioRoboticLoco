@@ -26,7 +26,7 @@ x0 =[0; 2; 1; 0]; % this was our initial
 
 %% Running stability functions
 % Running newton raphson to get a fixed point
-stabilityBool = 0;
+stabilityBool = 1;
 if stabilityBool
 fixedPoint = newtonRaphson(params, time, x0);
 

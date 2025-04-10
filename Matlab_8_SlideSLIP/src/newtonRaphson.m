@@ -17,29 +17,31 @@ abandon the idea of comparing the flight stances for now.
     %}
 
     [~, ~, R] = simulateSystem(params, time, 1, x0);
-    E = R - x0;
+    E = R(3) - x0(3);
     Error = norm(E);
 
     while (Error > tol) && (stallIterations < nr_max_iter)
 
-        for i = 1:numel(x0)
-            x0(i) = x0(i) + del;
+        % for i = 1:numel(x0)
+        for i = 1:1
+            x0(3) = x0(3) + del;
             [~, ~,R1] = simulateSystem(params, time, 1, x0);
 
-            x0(i) = x0(i) -2*del;
+            x0(3) = x0(3) -2*del;
             [~, ~,R2] = simulateSystem(params, time, 1, x0);
 
-            E2 = R2 - (x0);
+            E2 = R2(3) - x0(3);
 
-            x0(i) = x0(i) + 2*del;
-            E1 = R1 - (x0 + del);
+            x0(3) = x0(3) + 2*del;
+            E1 = R1(3) - (x0(3) + del);
 
             [~, ~, tmp] = simulateSystem(params, time, 1, x0);
-            Ex0 =  tmp - x0;
+            Ex0 =  tmp(3) - x0(3);
             slope(:, i) = (E1 - E2) / (2 * del);
-            x0(i) = x0(i) - del;
+            x0(3) = x0(3) - del;
         end
-        x1 = x0 - (slope^-1) * Ex0;
+        x1 = x0;
+        x1(3) = x0(3) - (slope^-1) * Ex0;
 
         [~, ~, tmp] = simulateSystem(params, time, 1, x1);
         new_error = norm(tmp - x1);
