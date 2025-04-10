@@ -21,15 +21,14 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
     % If you're running newton rhapson, only run each state once
     if nr_bool
-        duration = 2;
+        duration = 6;
     else
-        duration = 20;
+        duration = 10;
     end
 
     % Running 'duration' number of states
     for i = 1:duration
 
-        disp(state)
         switch state
 
             case 'stance'
@@ -92,12 +91,21 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
             case 'flight'
 
                 [T1, Y1] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
-
+                
                 % Parse out the results
                 x_vals = Y1(:, 1);
                 x_d_vals = Y1(:, 2);
                 z_vals = Y1(:, 3);
                 z_d_vals = Y1(:, 4);
+
+                % apex_height = max(z_vals);
+                % if flight_counter < 3
+                %     heights(flight_counter) = apex_height;
+                % elseif flight_counter == 3
+                %     dH = heights(2) - heights(1);
+                % end
+                % flight_counter = flight_counter + 1;
+
 
                 % Store the T, x, and z positions for plotting
                 if ~isempty(Kinematics.X)
@@ -130,6 +138,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 phi_d_init = l0*(vz*sin(phi_vals(end)) + vx*cos(phi_vals(end)));
 
                 init = [l0; l_d_init; params.phi_0; phi_d_init];
+                stance_init = init;
                 state = 'stance';
 
             case 'sliding'
@@ -181,6 +190,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
                 elseif ie ==2
                     init = [l_vals(end); l_d_vals(end); phi_vals(end); phi_d_vals(end)];
+                    stance_init = init;
                     state = 'stance';
                 end
 
@@ -189,7 +199,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     end
 
     if nr_bool
-        nr_results = init;
+        nr_results = stance_init;
     else
         nr_results = [];
     end
