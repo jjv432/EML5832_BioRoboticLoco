@@ -10,7 +10,7 @@ function params = getParams()
     params.phi_0 = -pi/6;  %*
     params.phi_d_0 = 1.5;
     params.l_d_0 = -4;
-    params.muS = .55; % Good for sliding
-    params.muK = (.75)*params.muS;
+    params.muS = .25; % Good for sliding
+    params.muK = (.5)*params.muS;
 
 end
