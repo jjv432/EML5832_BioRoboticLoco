@@ -17,7 +17,7 @@ abandon the idea of comparing the flight stances for now.
     %}
 
     [~, ~, R] = simulateSystem(params, time, 1, x0);
-    E = R([2 3]) - x0([2 3]);
+    E = R - x0;
     Error = norm(E);
 
     while (Error > tol) && (stallIterations < nr_max_iter)
@@ -30,21 +30,22 @@ abandon the idea of comparing the flight stances for now.
             x0(i) = x0(i) -2*del;
             [~, ~,R2] = simulateSystem(params, time, 1, x0);
 
-            E2 = R2([2 3]) - x0([2 3]);
+            E2 = R2 - x0;
 
             x0(i) = x0(i) + 2*del;
-            E1 = R1([2 3]) - (x0([2 3]) + del);
+            E1 = R1 - (x0 + del);
 
             [~, ~, tmp] = simulateSystem(params, time, 1, x0);
-            Ex0 =  tmp([2 3]) - x0([2 3]);
-            slope(:, i-1) = (E1 - E2) / (2 * del);
-            x0(i-1) = x0(i) - del;
+            Ex0 =  tmp - x0;
+            slope(:, i) = (E1 - E2) / (2 * del);
+            x0(i) = x0(i) - del;
         end
+        slope = slope([2 3], [2 3]);
         x1 = x0;
-        x1([2,3]) = x0([2,3]) - (slope^-1) * Ex0;
+        x1([2 3]) = x0([2 3]) - (slope^-1) * Ex0([2, 3]);
 
         [~, ~, tmp] = simulateSystem(params, time, 1, x1);
-        new_error = norm(tmp([2,3]) - x1([2,3]));
+        new_error = norm(tmp - x1);
         if new_error < Error
             Error = new_error;
             stallIterations = 0;
