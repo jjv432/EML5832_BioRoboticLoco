@@ -15,19 +15,72 @@ animate = 0;
 params = getParams();
 
 % Time Vector for ODE45
-% time = 0:.01:30;
 time = [0 30];
-
-% x0 =[params.l0; params.l_d_0; params.phi_0; params.phi_d_0]; % this was our initial
 
 % x, x_d, z, z_d
 x0 =[0; 1; 1.1; 0]; % this was our initial
-% x0 =[0; 0; 3; 0]; % this was our initial
-% params.phi_0 = pi/50;
-% params.t_hip = 0;
+
 
 %% Running stability functions
 % Running newton raphson to get a fixed point
+params.t_hip = 2;
+createSurfacePlots(params, time, x0)
+
+params.t_hip = 7;
+createSurfacePlots(params, time, x0)
+
+params.t_hip = 15;
+createSurfacePlots(params, time, x0)
+
+
+function createSurfacePlots(params, time, x0)
+    % x-axis is the initial z value, z_d value is the y-axis, stability is the
+    % vertical
+    persistent plotCount
+    if isempty(plotCount)
+        plotCount = 1;
+    end
+    fixedPoint = newtonRaphson(params, time, x0);
+    fixedPointStability = stabilityMeasure(params,time, fixedPoint);
+    fixedPointZ = fixedPoint(2);
+    fixedPointZ_D = fixedPoint(3);
+
+    % setting up plot parameters
+    max_z_val = ceil(2*fixedPointZ);
+    max_z_d_val = ceil(2*fixedPointZ_D);
+
+    sampleResolution = .1;
+    z_sample_points = 0:sampleResolution:max_z_val;
+    z_d_sample_points = 0:sampleResolution:max_z_d_val;
+    stabilities = zeros(numel(z_sample_points), numel(z_d_sample_points));
+
+    for i = 1:numel(z_sample_points)
+        for j = 1:numel(z_d_sample_points)
+
+            curZ = z_sample_points(i);
+            curZ_D = z_d_sample_points(j);
+            samplePoint = [0; 1; curZ; curZ_D];
+            stabilities(i, j) = stabilityMeasure(params,time, samplePoint);
+
+        end
+    end
+
+    figure()
+    ax = gca;
+    hold on
+    [X, Y] = meshgrid(z_d_sample_points, z_sample_points);
+    contourf(X, Y, real(stabilities));
+    ylabel("Z Vals");
+    xlabel("Z_D Vals");
+    colorbar(ax,"eastoutside");
+    title("Stability for " + num2str(params.t_hip));
+    saveas(gcf, "Stability" + plotCount + ".png");
+
+    plotCount = plotCount + 1;
+
+end
+
+%%
 stabilityBool = 1;
 if stabilityBool
     fixedPoint = newtonRaphson(params, time, x0);
@@ -49,7 +102,10 @@ if animate == 1
 end
 
 %% Plotting
-plotHopperStates(Kinematics, T)
-% 
+plotHopper = 0;
+if plotHopper == 1
+    plotHopperStates(Kinematics, T)
+end
+%
 % figure()
 % plot(Kinematics.X, Kinematics.Z)
