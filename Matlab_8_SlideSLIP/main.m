@@ -22,7 +22,9 @@ time = [0 30];
 
 % x, x_d, z, z_d
 x0 =[0; 1; 1.5; 0]; % this was our initial
-
+% x0 =[0; 0; 3; 0]; % this was our initial
+% params.phi_0 = pi/50;
+% params.t_hip = 0;
 
 %% Running stability functions
 % Running newton raphson to get a fixed point
@@ -133,6 +135,6 @@ grid on
 legend([h1, h2, h3], {'Flight', 'Sliding', 'Stance'}, 'Location', 'bestoutside');
 axis auto
 hold off
-
+% 
 % figure()
 % plot(Kinematics.X, Kinematics.Z)
