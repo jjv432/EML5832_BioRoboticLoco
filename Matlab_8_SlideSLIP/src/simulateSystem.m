@@ -1,6 +1,7 @@
-function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, init)
+function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, init_init)
 
 
+    num_flight_runs = 2;
     % Ending Conditions for ODE45
     stance_options = odeset('Events', @(t, y) stance_event_func(t,y,params));
     flight_options = odeset('Events', @(t, y) flight_event_func(t,y,params));
@@ -15,15 +16,18 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     Kinematics.Phi = [];
     Kinematics.L = [];
 
+    apex_state = [];
+    flight_counter = 0;
     T = [];
 
-    state = 'stance';
+    state = 'flight';
+    init = init_init;
 
     % If you're running newton rhapson, only run each state once
     if nr_bool
-        duration = 6;
+        duration = 12;
     else
-        duration = 50;
+        duration = 20;
     end
 
     % Running 'duration' number of states
@@ -90,8 +94,17 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
             case 'flight'
 
-                [T1, Y1] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
+                [T1, Y1, te, ye, ie] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
                 
+                flight_counter = flight_counter + 1;
+
+                if flight_counter < num_flight_runs
+                    apex_state = init_init + .1;
+                end
+
+                if flight_counter == num_flight_runs && ~isempty(ye)
+                    apex_state = ye(1, :)';
+                end
                 % Parse out the results
                 x_vals = Y1(:, 1);
                 x_d_vals = Y1(:, 2);
@@ -135,7 +148,10 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
                 % phi_d_init = sqrt((vz*sin(phi_vals(end))/l0)^2 + (vx*cos(phi_vals(end))/l0)^2);
                 % phi_d_init = (vz*sin(phi_vals(end)))/l0 - (vx*cos(phi_vals(end)))/l0;
-                phi_d_init = l0*(vz*sin(phi_vals(end)) + vx*cos(phi_vals(end)));
+                
+                
+                phi_d_init = l0*(vz*sin(params.phi_0) + vx*cos(params.phi_0));
+                
 
                 init = [l0; l_d_init; params.phi_0; phi_d_init];
                 stance_init = init;
@@ -199,7 +215,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     end
 
     if nr_bool
-        nr_results = stance_init;
+        nr_results = apex_state;
     else
         nr_results = [];
     end
