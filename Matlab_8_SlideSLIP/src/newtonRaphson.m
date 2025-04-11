@@ -6,7 +6,7 @@ function fixedPoint = newtonRaphson(params, time, x0)
     stallIterations = 0;
     tol = 1e-6;
     del = 1e-5;
-    nr_max_iter = 500;
+    nr_max_iter = 200;
 
     % x0 =[params.l0; params.l_d_0; params.phi_0; params.phi_d_0]; % this was our initial
 
@@ -20,10 +20,12 @@ abandon the idea of comparing the flight stances for now.
     E = R - x0;
     Error = norm(E);
 
+    states_to_vary = [4];
+
     while (Error > tol) && (stallIterations < nr_max_iter)
 
         % for i = 1:numel(x0)
-        for i = 2:3
+        for i = states_to_vary
             x0(i) = x0(i) + del;
             [~, ~,R1] = simulateSystem(params, time, 1, x0);
 
@@ -40,9 +42,9 @@ abandon the idea of comparing the flight stances for now.
             slope(:, i) = (E1 - E2) / (2 * del);
             x0(i) = x0(i) - del;
         end
-        slope = slope([2 3], [2 3]);
+        slope = slope(states_to_vary, states_to_vary);
         x1 = x0;
-        x1([2 3]) = x0([2 3]) - (slope^-1) * Ex0([2, 3]);
+        x1(states_to_vary) = x0(states_to_vary) - (slope^-1) * Ex0(states_to_vary);
 
         [~, ~, tmp] = simulateSystem(params, time, 1, x1);
         new_error = norm(tmp - x1);
