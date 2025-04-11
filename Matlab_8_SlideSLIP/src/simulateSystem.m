@@ -1,6 +1,7 @@
 function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, init_init)
 
 
+    num_flight_runs = 3;
     % Ending Conditions for ODE45
     stance_options = odeset('Events', @(t, y) stance_event_func(t,y,params));
     flight_options = odeset('Events', @(t, y) flight_event_func(t,y,params));
@@ -24,7 +25,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
     % If you're running newton rhapson, only run each state once
     if nr_bool
-        duration = 8;
+        duration = 12;
     else
         duration = 20;
     end
@@ -97,11 +98,11 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 
                 flight_counter = flight_counter + 1;
 
-                if flight_counter == 1
+                if flight_counter < num_flight_runs
                     apex_state = init_init + .1;
                 end
 
-                if flight_counter == 2 && ~isempty(ye)
+                if flight_counter == num_flight_runs && ~isempty(ye)
                     apex_state = ye(1, :)';
                 end
                 % Parse out the results
