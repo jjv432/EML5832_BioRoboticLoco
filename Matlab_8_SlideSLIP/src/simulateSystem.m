@@ -1,7 +1,7 @@
 function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, init_init)
 
 
-    num_flight_runs = 3;
+    num_flight_runs = 2;
     % Ending Conditions for ODE45
     stance_options = odeset('Events', @(t, y) stance_event_func(t,y,params));
     flight_options = odeset('Events', @(t, y) flight_event_func(t,y,params));
