@@ -1,5 +1,11 @@
 function animateHopper(Kinematics, T)
 
+    vid = VideoWriter("HopperAnimation.avi");
+    fps = 20;
+    vid.FrameRate = fps;
+    vid.Quality = 85;
+    open(vid);
+
     leg_width = .05;
     leg_coordinates = [-leg_width/2 -leg_width/2 leg_width/2 leg_width/2; 0 -1 -1 0];
 
@@ -18,9 +24,20 @@ function animateHopper(Kinematics, T)
 
     for i = 2:length(X)
 
-        if T(i, 2) || T(i, 3) % in stance or sliding
+        if T(i, 2) % in stance 
 
             h1 = plot(X(i), Z(i), 'ro', 'LineWidth',5);
+            theta = -Phi(i);
+            rot_matrix = [cos(theta), -sin(theta); sin(theta), cos(theta)];
+            coords = rot_matrix * (leg_coordinates.*[1; L(i)]);
+            x_coords= coords(1, :) + X(i);
+            y_coords = coords(2, :) + Z(i);
+
+            h2 = fill(x_coords, y_coords, 'g');
+
+        elseif T(i, 3) % in sliding
+
+            h1 = plot(X(i), Z(i), 'go', 'LineWidth',5);
             theta = -Phi(i);
             rot_matrix = [cos(theta), -sin(theta); sin(theta), cos(theta)];
             coords = rot_matrix * (leg_coordinates.*[1; L(i)]);
@@ -34,6 +51,7 @@ function animateHopper(Kinematics, T)
             h2 = [];
         end
 
+        
 
         axis([X(i)-4, X(i)+4, -1, 3])
         axis equal
@@ -41,7 +59,10 @@ function animateHopper(Kinematics, T)
         ylabel("z-position, m")
         legend("Ground","Origin", "Center of Mass")
         title("SLIP-Model Position")
-        pause(T(i) - T(i-1));
+       
+        pause(1/fps);
+
+        writeVideo(vid, getframe(gcf));
 
         delete(h1)
         if ~isempty(h2)
@@ -49,5 +70,6 @@ function animateHopper(Kinematics, T)
         end
     end
 
+    close(vid);
 
 end

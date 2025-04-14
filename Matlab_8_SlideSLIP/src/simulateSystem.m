@@ -1,7 +1,10 @@
 function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, init_init)
 
 
+    % How many flight phases should be ran to do newton raphson comparison
     num_flight_runs = 2;
+
+
     % Ending Conditions for ODE45
     stance_options = odeset('Events', @(t, y) stance_event_func(t,y,params));
     flight_options = odeset('Events', @(t, y) flight_event_func(t,y,params));
@@ -94,7 +97,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
             case 'flight'
 
-                [T1, Y1, te, ye, ie] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
+                [T1, Y1, ~, ye, ~] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
                 
                 flight_counter = flight_counter + 1;
 
@@ -110,14 +113,6 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 x_d_vals = Y1(:, 2);
                 z_vals = Y1(:, 3);
                 z_d_vals = Y1(:, 4);
-
-                % apex_height = max(z_vals);
-                % if flight_counter < 3
-                %     heights(flight_counter) = apex_height;
-                % elseif flight_counter == 3
-                %     dH = heights(2) - heights(1);
-                % end
-                % flight_counter = flight_counter + 1;
 
 
                 % Store the T, x, and z positions for plotting
@@ -146,15 +141,10 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 % l_d_init = vz * cos(phi_vals(end)) + vx * sin(phi_vals(end));
                 l_d_init = vz * cos(params.phi_0) + vx * sin(params.phi_0);
 
-                % phi_d_init = sqrt((vz*sin(phi_vals(end))/l0)^2 + (vx*cos(phi_vals(end))/l0)^2);
-                % phi_d_init = (vz*sin(phi_vals(end)))/l0 - (vx*cos(phi_vals(end)))/l0;
-                
-                
                 phi_d_init = l0*(vz*sin(params.phi_0) + vx*cos(params.phi_0));
                 
-
                 init = [l0; l_d_init; params.phi_0; phi_d_init];
-                stance_init = init;
+
                 state = 'stance';
 
             case 'sliding'
@@ -181,7 +171,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 end
 
                 % Solve for x and z positions and velocities
-                x_vals = l_vals .* sin(phi_vals);
+                x_vals = l_vals .* sin(phi_vals) + s_vals;
                 z_vals = l_vals .* cos(phi_vals);
 
                 % Normalize the x_vals
@@ -199,14 +189,13 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                     % Set 'state' and the init vector for the next state
                     x_d_init = l_d_vals(end)*sin(phi_vals(end)) + phi_d_vals(end)*l_vals(end)*cos(phi_vals(end)) + s_d_vals(end);
                     z_d_init = l_d_vals(end)*cos(phi_vals(end)) + phi_d_vals(end)*l_vals(end)*sin(phi_vals(end));
-                    x_init = l_vals(end)*sin(phi_vals(end)) + x_offset;
+                    x_init = l_vals(end)*sin(phi_vals(end)) + x_offset + sum(s_vals);
                     z_init = l_vals(end)*cos(phi_vals(end));
                     init = [x_init; x_d_init; z_init; z_d_init];
                     state = 'flight';
 
                 elseif ie ==2
                     init = [l_vals(end); l_d_vals(end); phi_vals(end); phi_d_vals(end)];
-                    stance_init = init;
                     state = 'stance';
                 end
 
