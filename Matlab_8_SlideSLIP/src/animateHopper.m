@@ -60,7 +60,7 @@ function animateHopper(Kinematics, T)
         legend("Ground","Origin", "Center of Mass")
         title("SLIP-Model Position")
        
-        pause(1/fps);
+        pause(T(i) - T(i-1));
 
         writeVideo(vid, getframe(gcf));
 
