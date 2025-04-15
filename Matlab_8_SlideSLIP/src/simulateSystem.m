@@ -14,14 +14,14 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
     % Setting empty arrays for all the data that we want to store
     Kinematics.X = [];
-    Kinematics.S = [];
     Kinematics.Z = [];
     Kinematics.Phi = [];
     Kinematics.L = [];
+    T = [];
 
     apex_state = [];
     flight_counter = 0;
-    T = [];
+    
 
     state = 'flight';
     init = init_init;
