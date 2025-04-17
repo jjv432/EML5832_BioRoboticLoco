@@ -20,11 +20,11 @@ x0 =[0; 1; 1.1; 0]; % this was our initial
 
 %% Running stability functions
 % Running newton raphson to get a fixed point
-surfacePlotBool = 0;
+surfacePlotBool = 1;
 
 if surfacePlotBool
     params.phi_0 = -pi/4.5;
-    for i = 1:4
+    for i = 1:10
         createSurfacePlots(params, time, x0)
         params.phi_0 = params.phi_0 - .02;
     end
