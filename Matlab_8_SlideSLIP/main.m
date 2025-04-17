@@ -8,6 +8,7 @@ format compact;
 
 % Add functions in
 addpath("src");
+addpath("StabilityPlots");
 
 params = getParams();
 
@@ -24,7 +25,7 @@ surfacePlotBool = 1;
 
 if surfacePlotBool
     params.phi_0 = -pi/4.5;
-    for i = 1:10
+    for i = 1
         createSurfacePlots(params, time, x0)
         params.phi_0 = params.phi_0 - .02;
     end
@@ -49,7 +50,7 @@ end
 
 %% Animation
 % Show Animation?
-animate = 1;
+animate = 0;
 if animate == 1
     animateHopper(Kinematics, T);
 end
