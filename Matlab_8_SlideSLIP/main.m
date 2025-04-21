@@ -15,11 +15,11 @@ params = getParams();
 time = [0 30];
 
 % l0, l_d, phi_0, phi_d
-l_d = -3.5;
+l_d = -5;
 phi_d = 3.5;
-params.phi_0 = -1.2;
+params.phi_0 = -1.2; % const
 params.muS = 10; 
-params.t_hip = 5;
+params.t_hip = 3;
 
 x0 =[params.l0; l_d; params.phi_0; phi_d]; % this was our initial
 
@@ -41,7 +41,7 @@ if stabilityBool
     fixedPoint = newtonRaphson(params, time, x0);
 
     % Finding the stability of the fixed point
-    maxEig = stabilityMeasure(params,time, fixedPoint)
+    % maxEig = stabilityMeasure(params,time, fixedPoint)
     x0 = fixedPoint;
     writematrix(x0, "FixedPointSaved");
 else

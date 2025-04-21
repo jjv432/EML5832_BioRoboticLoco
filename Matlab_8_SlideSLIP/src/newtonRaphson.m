@@ -32,13 +32,27 @@ abandon the idea of comparing the flight stances for now.
             x0(i) = x0(i) -2*del;
             [~, ~,R2] = simulateSystem(params, time, 1, x0);
 
-            E2 = R2 - x0;
+            if ~isempty(R2)
+                E2 = R2 - x0;
+            else
+                break;
+            end
 
             x0(i) = x0(i) + 2*del;
-            E1 = R1 - (x0 + del);
+            if ~isempty(R1)
+                E1 = R1 - (x0 + del);
+            else
+                break;
+            end
 
             [~, ~, tmp] = simulateSystem(params, time, 1, x0);
-            Ex0 =  tmp - x0;
+
+            if ~isempty(tmp)
+
+                Ex0 =  tmp - x0;
+            else
+                break;
+            end
             slope(:, i) = (E1 - E2) / (2 * del);
             x0(i) = x0(i) - del;
         end
@@ -47,7 +61,13 @@ abandon the idea of comparing the flight stances for now.
         x1(states_to_vary) = x0(states_to_vary) - (slope^-1) * Ex0(states_to_vary);
 
         [~, ~, tmp] = simulateSystem(params, time, 1, x1);
-        new_error = norm(tmp - x1);
+
+        if ~isempty(tmp)
+            new_error = norm(tmp - x1);
+        else
+            break;
+        end
+
         if new_error < Error
             Error = new_error;
             stallIterations = 0;
