@@ -16,8 +16,8 @@ time = [0 30];
 
 params.muS = 10; 
 params.t_hip = 0;
-x_d = 1.5;
-z_d = 0;
+x_d = 2.5;
+z_d = -.5;
 
 x0 =[0; x_d; 1.1; z_d]; % this was our initial
 
