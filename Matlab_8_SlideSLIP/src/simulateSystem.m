@@ -4,6 +4,8 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     % How many flight phases should be ran to do newton raphson comparison
     num_flight_runs = 2;
 
+    num_stance_runs = 2;
+
 
     % Ending Conditions for ODE45
     stance_options = odeset('Events', @(t, y) stance_event_func(t,y,params));
@@ -21,16 +23,17 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
     apex_state = [];
     flight_counter = 0;
+    stance_counter = 0;
     
 
     state = 'stance';
-    init = [params.l0; init_init(2); params.phi_0; init_init(4)];
+    init = init_init;
 
     % If you're running newton rhapson, only run each state once
     if nr_bool
         duration = 12;
     else
-        duration = 20;
+        duration = 30;
     end
 
     % Running 'duration' number of states
@@ -40,9 +43,16 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
             case 'stance'
 
+                if stance_counter == num_stance_runs
+                    apex_state = init;
+                end
+
                 % Run the stance simulation
                 [T1, Y1, ~, ~, ie] = ode45(@(T1, Y1) stance_dynamics(T1, Y1, params), time, init, stance_options);
 
+                stance_counter = stance_counter + 1;
+
+                
                 % Parse out the results
                 l_vals = Y1(:, 1);
                 l_d_vals = Y1(:, 2);
@@ -97,17 +107,10 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
             case 'flight'
 
-                [T1, Y1, ~, ye, ~] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
+                [T1, Y1, ~, ~, ~] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
                 
                 flight_counter = flight_counter + 1;
 
-                if flight_counter < num_flight_runs
-                    apex_state = init_init + .1;
-                end
-
-                if flight_counter == num_flight_runs && ~isempty(ye)
-                    apex_state = ye(1, :)';
-                end
                 % Parse out the results
                 x_vals = Y1(:, 1);
                 x_d_vals = Y1(:, 2);

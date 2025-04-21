@@ -15,21 +15,25 @@ params = getParams();
 time = [0 30];
 
 % l0, l_d, phi_0, phi_d
-l_d = -3;
-phi_d = 3;
+l_d = -3.5;
+phi_d = 3.5;
+params.phi_0 = -1.2;
+params.muS = 10; 
+params.t_hip = 5;
+
 x0 =[params.l0; l_d; params.phi_0; phi_d]; % this was our initial
 
 %% Running stability functions
 % Running newton raphson to get a fixed point
-surfacePlotBool = 0;
-
-if surfacePlotBool
-    params.phi_0 = -pi/4.5;
-    for i = 1
-        createSurfacePlots(params, time, x0)
-        params.phi_0 = params.phi_0 - .02;
-    end
-end
+% surfacePlotBool = 0;
+% 
+% if surfacePlotBool
+%     params.phi_0 = -pi/4.5;
+%     for i = 1
+%         createSurfacePlots(params, time, x0)
+%         params.phi_0 = params.phi_0 - .02;
+%     end
+% end
 
 %%
 stabilityBool = 0;
