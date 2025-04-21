@@ -23,8 +23,8 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     flight_counter = 0;
     
 
-    state = 'flight';
-    init = init_init;
+    state = 'stance';
+    init = [params.l0; init_init(2); params.phi_0; init_init(4)];
 
     % If you're running newton rhapson, only run each state once
     if nr_bool
