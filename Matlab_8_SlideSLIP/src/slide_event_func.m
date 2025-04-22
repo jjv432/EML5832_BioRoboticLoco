@@ -41,7 +41,7 @@ function [position,isterminal,direction] = slide_event_func(t,y, params)
     % Ffk = Fleg_y * muK;
 
     % position(2) = Ffk - Fleg_x;
-    position(2) = tan(phi) - muK;
+    position(2) = abs(tan(phi)) - muK;
     isterminal(2) = 1;
     direction(2) = -1;
 

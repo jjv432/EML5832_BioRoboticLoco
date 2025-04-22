@@ -39,6 +39,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     % Running 'duration' number of states
     for i = 1:duration
 
+        disp(state);
         switch state
 
             case 'stance'
@@ -150,7 +151,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
                 state = 'stance';
 
-                if tan(params.phi_0) < params.muS
+                if abs(tan(params.phi_0)) > params.muS
                     init = [l0; l_d_init; params.phi_0; phi_d_init; x_vals(end) + l0*sin(params.phi_0); 0];
                     state  = 'sliding';
                 end
