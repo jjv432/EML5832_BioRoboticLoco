@@ -2,10 +2,12 @@ function [position,isterminal,direction] = flight_event_func(t,y, params)
 
     % Assuming that the leg 'snaps' to l = l0, phi = phi0
     % Values that won't change:
-    persistent phi0 l0
+    persistent phi0 l0 muS slideBool
     if isempty(phi0)
         phi0 = params.phi_0;
         l0 = params.l0;
+        muS = params.muS;
+        slideBool = 1;
     end
 
     z = y(3);

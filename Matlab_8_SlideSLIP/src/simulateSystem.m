@@ -24,7 +24,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     apex_state = [];
     flight_counter = 0;
     stance_counter = 0;
-    
+
 
     state = 'flight';
     init = init_init;
@@ -52,7 +52,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
                 stance_counter = stance_counter + 1;
 
-                
+
                 % Parse out the results
                 l_vals = Y1(:, 1);
                 l_d_vals = Y1(:, 2);
@@ -75,7 +75,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 z_vals = l_vals .* cos(phi_vals);
 
                 % Normalize the x position
-                x_vals = x_vals - x_vals(1);                
+                x_vals = x_vals - x_vals(1);
 
                 % Store the T, x, and z positions for plotting
                 Kinematics.X = [Kinematics.X; x_vals + x_offset];
@@ -108,7 +108,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
             case 'flight'
 
                 [T1, Y1, ~, ~, ~] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
-                
+
                 flight_counter = flight_counter + 1;
 
                 % Parse out the results
@@ -145,10 +145,15 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 l_d_init = vz * cos(params.phi_0) + vx * sin(params.phi_0);
 
                 phi_d_init = l0*(vz*sin(params.phi_0) + vx*cos(params.phi_0));
-                
+
                 init = [l0; l_d_init; params.phi_0; phi_d_init];
 
                 state = 'stance';
+
+                if tan(params.phi_0) < params.muS
+                    init = [l0; l_d_init; params.phi_0; phi_d_init; x_vals(end) + l0*sin(params.phi_0); 0];
+                    state  = 'sliding';
+                end
 
             case 'sliding'
 

@@ -30,11 +30,6 @@ function [position,isterminal,direction] = stance_event_func(t,y, params)
         muS = params.muS;
     end
 
-    % Fleg_x = abs(Fleg*sin(phi));
-    % Fleg_y = abs(Fleg*cos(phi));
-    % Ffs = Fleg_y * muS;
-
-    % position(2) = Fleg_x - Ffs;
     position(2) = tan(phi) - muS;
     isterminal(2) = 1;
     direction(2) = 1;

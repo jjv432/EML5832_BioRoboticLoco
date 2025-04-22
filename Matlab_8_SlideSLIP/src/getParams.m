@@ -3,8 +3,8 @@ function params = getParams()
     % Parameters
     params.l0 = 1;  %* m
     % params.b = 1500;  %*
-    params.b = 750;  %*
-    params.k = 20000; %*
+    params.b = 1000;  %*
+    params.k = 10000; %*
     params.g = 9.81;
     params.m = 80;  %*
     params.phi_0 = -pi/4;  %*
