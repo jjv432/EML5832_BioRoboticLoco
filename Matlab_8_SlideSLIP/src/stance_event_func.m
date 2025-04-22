@@ -30,7 +30,7 @@ function [position,isterminal,direction] = stance_event_func(t,y, params)
         muS = params.muS;
     end
 
-    position(2) = tan(phi) - muS;
+    position(2) = abs(tan(phi)) - muS;
     isterminal(2) = 1;
     direction(2) = 1;
 

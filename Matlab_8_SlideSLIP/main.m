@@ -2,9 +2,8 @@
 % Ryan Kaczmarczyk, Jack Vranicar, and Shane Rober
 
 clc;
-clear persistent;
-clearvars;
 close all;
+clear persistent;
 format compact;
 
 % Add functions in
@@ -15,9 +14,9 @@ params = getParams();
 % Time Vector for ODE45
 time = [0 30];
 
-params.muS = 5;
-params.t_hip = 2;
-x_d = 4;
+params.muS = 0.1;
+params.t_hip = 0;
+x_d = 1;
 z_d = -1;
 
 z = cos(params.phi_0) + .1;
@@ -55,7 +54,7 @@ end
 
 %% Animation
 % Show Animation?
-animate = 0;
+animate = 1;
 if animate == 1
     animateHopper(Kinematics, T);
 end
