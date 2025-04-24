@@ -24,7 +24,9 @@ function func = slide_dynamics(t,y, params)
 
     if l < params.min_l
         l = min_l;
-        l_d = 0;
+        if l_d < 0
+            l_d = 0;
+        end
     end
 
     % Adding sliding dynamics
