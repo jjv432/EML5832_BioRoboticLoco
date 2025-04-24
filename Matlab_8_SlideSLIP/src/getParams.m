@@ -9,7 +9,7 @@ function params = getParams()
     params.m = 80;  %*
     params.phi_0 = -pi/3.5;  %*
     params.muS = 3; 
-    params.muK = (.05)*params.muS;
+    params.muK = (.25)*params.muS;
 
     zeta = params.b/(2*sqrt(params.m*params.k));
 

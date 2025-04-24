@@ -1,6 +1,14 @@
 % Slip Simulation and Animation
 % Ryan Kaczmarczyk, Jack Vranicar, and Shane Rober
 
+%{
+TODO
+
+Fix the event function for sliding to stance. Should probably just be a >
+or < thing for angles instead of subtraction? 
+
+
+%}
 clc;
 close all;
 clear persistent;

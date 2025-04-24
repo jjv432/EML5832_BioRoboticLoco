@@ -32,13 +32,13 @@ function func = slide_dynamics(t,y, params)
     % Adding sliding dynamics
     Fleg = k*(l0 - l) - b*l_d;
     Fleg_x = Fleg*sin(phi);
-    % Ff_leg = (m*g + Fleg*cos(phi))*muK*sin(phi);
-    Ff_leg = (Fleg*cos(phi))*muK*sin(phi);
+    Ff_leg = (m*g + Fleg*cos(phi))*muK*sin(phi);
+    % Ff_leg = (Fleg*cos(phi))*muK*sin(phi);
     Ff_x = (m*g + Fleg*cos(phi))*muK*cos(phi);
     l_dd = l*phi_d^2 -g*cos(phi) - Fleg*m_inv - Ff_leg*m_inv;
 
     t_fric = (m*g + Fleg*cos(phi))*muK*l*cos(phi);
-    phi_dd = (1/l)*(-2*l_d*phi_d) + (1/l)*(g*sin(phi)) + t_hip/(m*l*l) + t_fric/(m*l*l);
+    phi_dd = (1/l)*(-2*l_d*phi_d) + (1/l)*(g*sin(phi)) + m_inv*t_hip/(l*l) + m_inv*t_fric/(l*l);
 
     s_dd = (-Fleg_x + Ff_x)*m_inv;
 
