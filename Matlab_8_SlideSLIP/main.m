@@ -17,7 +17,7 @@ time = 0:.01:30;
 
 params.muS = .01;
 params.t_hip = 0;
-x_d = 3;
+x_d = 1;
 % z_d = -1;
 z_d = 0;
 
