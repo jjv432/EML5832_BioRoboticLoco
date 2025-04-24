@@ -15,14 +15,14 @@ params = getParams();
 % Time Vector for ODE45
 time = 0:.01:30;
 
-params.muS = 0.1;
+params.muS = .01;
 params.t_hip = 0;
-x_d = 30;
+x_d = 3;
 % z_d = -1;
 z_d = 0;
 
 % z = cos(params.phi_0) + .1;
-z = 2.5;
+z = 1.1;
 
 x0 =[0; x_d; z; z_d]; % this was our initial
 
@@ -57,7 +57,7 @@ end
 
 %% Animation
 % Show Animation?
-animate = 0;
+animate = 1;
 if animate == 1
     animateHopper(Kinematics, T);
 end

@@ -32,9 +32,11 @@ function func = slide_dynamics(t,y, params)
 
     % Making sure directions of forces are perserved; lazy fix
     % Not sure if this is flipped
-    if phi < 0
+    Fleg_x = abs(Fleg_x);
+    Ff_x = abs(Ff_x);
+    if phi > 0
         s_dd = (Fleg_x - Ff_x)/m;
-    elseif phi >= 0
+    elseif phi <= 0
         s_dd = (Ff_x - Fleg_x)/m;
     else
         s_dd = 0;

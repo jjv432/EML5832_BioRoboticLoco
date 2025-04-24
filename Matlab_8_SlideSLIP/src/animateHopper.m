@@ -20,12 +20,14 @@ function animateHopper(Kinematics, T)
     hold on
     yline(0, 'k--');
     plot(0, 0, 'x', 'LineWidth', 3);
-    
+
+    wasSliding = 0;
+
 
     for i = 2:length(X)
 
-        if T(i, 2) % in stance 
-
+        if T(i, 2) % in stance
+            wasSliding = 0;
             h1 = plot(X(i), Z(i), 'ro', 'LineWidth',5);
             theta = -Phi(i);
             rot_matrix = [cos(theta), -sin(theta); sin(theta), cos(theta)];
@@ -37,6 +39,7 @@ function animateHopper(Kinematics, T)
 
         elseif T(i, 3) % in sliding
 
+
             h1 = plot(X(i), Z(i), 'go', 'LineWidth',5);
             theta = -Phi(i);
             rot_matrix = [cos(theta), -sin(theta); sin(theta), cos(theta)];
@@ -46,20 +49,29 @@ function animateHopper(Kinematics, T)
 
             h2 = fill(x_coords, y_coords, 'g');
 
+            if ~wasSliding
+
+                touchdown_x = mean(x_coords(2:3));
+                scatter(touchdown_x, 0, '*k');
+                wasSliding = 1;
+            end
+
         else %flight
+            wasSliding = 0;
             h1 = plot(X(i), Z(i), 'ko', 'LineWidth',5);
             h2 = [];
         end
 
-       
+
         axis([X(i)-3, X(i)+3, -1, 3])
         % axis([-1, 60, -1, 3])
         xlabel("x-position, m")
         ylabel("z-position, m")
         legend("Ground","Origin", "Center of Mass")
         title("SLIP-Model Position")
-       
-        pause(T(i) - T(i-1));
+
+        % pause(T(i) - T(i-1));
+        pause(.2);
 
         writeVideo(vid, getframe(gcf));
 
