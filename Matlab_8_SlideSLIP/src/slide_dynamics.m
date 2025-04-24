@@ -22,17 +22,18 @@ function func = slide_dynamics(t,y, params)
     s = y(5);
     s_d = y(6);
 
-    if l < params.min_l
-        l = min_l;
-        if l_d < 0
-            l_d = 0;
-        end
-    end
+    % if l < params.min_l
+    %     l = min_l;
+    %     % if l_d < 0
+    %     %     l_d = 0;
+    %     % end
+    % end
 
     % Adding sliding dynamics
     Fleg = k*(l0 - l) - b*l_d;
     Fleg_x = Fleg*sin(phi);
-    Ff_leg = (m*g + Fleg*cos(phi))*muK*sin(phi);
+    % Ff_leg = (m*g + Fleg*cos(phi))*muK*sin(phi);
+    Ff_leg = (Fleg*cos(phi))*muK*sin(phi);
     Ff_x = (m*g + Fleg*cos(phi))*muK*cos(phi);
     l_dd = l*phi_d^2 -g*cos(phi) - Fleg*m_inv - Ff_leg*m_inv;
 

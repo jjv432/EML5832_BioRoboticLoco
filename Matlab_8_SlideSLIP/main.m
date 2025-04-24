@@ -55,7 +55,7 @@ end
 
 %% Animation
 % Show Animation?
-animate = 1;
+animate = 0;
 if animate == 1
     animateHopper(Kinematics, T);
 end

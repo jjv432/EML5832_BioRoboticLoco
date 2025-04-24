@@ -18,12 +18,12 @@ function func = stance_dynamics(t,y, params)
     phi = y(3);
     phi_d = y(4);
 
-    if l < params.min_l
-        l = min_l;
-        if l_d < 0
-            l_d = 0;
-        end
-    end
+    % if l < params.min_l
+    %     l = min_l;
+    %     % if l_d < 0
+    %     %     l_d = 0;
+    %     % end
+    % end
 
     % Determining second derivatives of l and phi
     l_dd = l*phi_d^2 - g*cos(phi) - (k/m)*(l - l0) - (b/m)*l_d;
