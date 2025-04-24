@@ -144,7 +144,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 % l_d_init = vz * cos(phi_vals(end)) + vx * sin(phi_vals(end));
                 l_d_init = vz * cos(params.phi_0) + vx * sin(params.phi_0);
 
-                phi_d_init = l0*(vz*sin(params.phi_0) + vx*cos(params.phi_0));
+                phi_d_init = l0*(-vz*sin(params.phi_0) + vx*cos(params.phi_0));
 
 
                 if abs(tan(params.phi_0)) > params.muS
