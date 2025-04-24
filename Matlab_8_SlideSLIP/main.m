@@ -15,13 +15,12 @@ params = getParams();
 % Time Vector for ODE45
 time = 0:.01:30;
 
-params.muS = .01;
+params.muS = 0;
 params.t_hip = 0;
-x_d = 1;
-% z_d = -1;
+x_d = 25;
+
 z_d = 0;
 
-% z = cos(params.phi_0) + .1;
 z = 1.1;
 
 x0 =[0; x_d; z; z_d]; % this was our initial
@@ -29,7 +28,7 @@ x0 =[0; x_d; z; z_d]; % this was our initial
 %% Running stability functions
 % Running newton raphson to get a fixed point
 % surfacePlotBool = 0;
-% 
+%
 % if surfacePlotBool
 %     params.phi_0 = -pi/4.5;
 %     for i = 1
