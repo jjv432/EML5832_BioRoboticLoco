@@ -7,7 +7,7 @@ function params = getParams()
     params.k = 10000; %*
     params.g = 9.81;
     params.m = 80;  %*
-    params.phi_0 = -pi/4;  %*
+    params.phi_0 = -pi/3.5;  %*
     params.muS = .05; 
     params.muK = (.5)*params.muS;
 

@@ -40,9 +40,9 @@ function func = slide_dynamics(t,y, params)
     % Not sure if this is flipped
     Fleg_x = abs(Fleg_x);
     Ff_x = abs(Ff_x);
-    if phi < 0
+    if phi > 0
         s_dd = (Fleg_x - Ff_x)/m;
-    elseif phi > 0
+    elseif phi < 0
         s_dd = (Ff_x - Fleg_x)/m;
     else
         s_dd = 0;
