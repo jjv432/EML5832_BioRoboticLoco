@@ -16,7 +16,7 @@ params = getParams();
 time = 0:.01:30;
 
 params.t_hip = 0;
-x_d = 2.5;
+x_d = 1;
 
 z_d = 0;
 

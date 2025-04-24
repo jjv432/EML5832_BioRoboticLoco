@@ -2,7 +2,7 @@ function params = getParams()
 
     % Parameters
     params.l0 = 1;  %* m
-    params.min_l = params.l0*.25;
+    params.min_l = params.l0*.4;
     params.b = 2500;  %*
     params.k = 10000; %*
     params.g = 9.81;
