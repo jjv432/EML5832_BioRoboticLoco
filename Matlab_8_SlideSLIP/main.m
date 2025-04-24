@@ -4,7 +4,8 @@
 clc;
 close all;
 clear persistent;
-format compact;
+clear functions;
+clearvars;
 
 % Add functions in
 addpath("src");
@@ -12,14 +13,16 @@ addpath("src");
 params = getParams();
 
 % Time Vector for ODE45
-time = [0 30];
+time = 0:.01:30;
 
 params.muS = 0.1;
 params.t_hip = 0;
-x_d = 1;
-z_d = -1;
+x_d = 30;
+% z_d = -1;
+z_d = 0;
 
-z = cos(params.phi_0) + .1;
+% z = cos(params.phi_0) + .1;
+z = 2.5;
 
 x0 =[0; x_d; z; z_d]; % this was our initial
 
@@ -54,7 +57,7 @@ end
 
 %% Animation
 % Show Animation?
-animate = 1;
+animate = 0;
 if animate == 1
     animateHopper(Kinematics, T);
 end

@@ -53,7 +53,6 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
                 stance_counter = stance_counter + 1;
 
-
                 % Parse out the results
                 l_vals = Y1(:, 1);
                 l_d_vals = Y1(:, 2);
@@ -152,7 +151,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 state = 'stance';
 
                 if abs(tan(params.phi_0)) > params.muS
-                    init = [l0; l_d_init; params.phi_0; phi_d_init; x_vals(end) + l0*sin(params.phi_0); 0];
+                    init = [l0; l_d_init; params.phi_0; phi_d_init; x_vals(end) + l0*sin(params.phi_0); vx];
                     state  = 'sliding';
                 end
 

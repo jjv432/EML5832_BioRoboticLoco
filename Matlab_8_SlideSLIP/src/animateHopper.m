@@ -51,10 +51,9 @@ function animateHopper(Kinematics, T)
             h2 = [];
         end
 
-        
-
-        axis([X(i)-4, X(i)+4, -1, 3])
-        axis equal
+       
+        axis([X(i)-3, X(i)+3, -1, 3])
+        % axis([-1, 60, -1, 3])
         xlabel("x-position, m")
         ylabel("z-position, m")
         legend("Ground","Origin", "Center of Mass")
