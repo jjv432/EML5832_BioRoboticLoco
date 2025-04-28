@@ -23,12 +23,12 @@ params = getParams();
 % Time Vector for ODE45
 time = 0:.01:30;
 
-params.t_hip = 0;
-x_d = 1;
+params.t_hip = 3;
+x_d = 2;
 
 z_d = 0;
 
-z = 1.1;
+z = 1;
 
 x0 =[0; x_d; z; z_d]; % this was our initial
 
@@ -63,7 +63,7 @@ end
 
 %% Animation
 % Show Animation?
-animate = 0;
+animate = 1;
 if animate == 1
     animateHopper(Kinematics, T);
 end
