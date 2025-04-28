@@ -23,8 +23,7 @@ params = getParams();
 % Time Vector for ODE45
 time = 0:.01:30;
 
-params.t_hip = 3;
-x_d = 2;
+x_d = 5;
 
 z_d = 0;
 

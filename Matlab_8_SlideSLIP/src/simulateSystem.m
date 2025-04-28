@@ -158,6 +158,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
             case 'sliding'
 
+                clear slide_event_func
                 % Run the stance simulation
                 [T1, Y1, ~, ~, ie] = ode45(@(T1, Y1) slide_dynamics(T1, Y1, params), time, init, slide_options);
 
