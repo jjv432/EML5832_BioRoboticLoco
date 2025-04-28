@@ -2,12 +2,13 @@ function [position,isterminal,direction] = stance_event_func(t,y, params)
 
     % Event for a transition to flight
 
-    persistent k l0 b t_hip
+    persistent k l0 b t_hip muS
     if isempty(k)
         k = params.k;
         l0 = params.l0;
         b = params.b;
         t_hip = params.t_hip;
+        muS = params.muS;
     end
 
     l = y(1);
@@ -24,12 +25,6 @@ function [position,isterminal,direction] = stance_event_func(t,y, params)
     direction(1) = -1;
 
     % Event for a transistion to sliding
-    
-    persistent muS
-    if isempty(muS)
-        muS = params.muS;
-    end
-
     position(2) = abs(tan(phi)) - muS;
     isterminal(2) = 1;
     direction(2) = 1;

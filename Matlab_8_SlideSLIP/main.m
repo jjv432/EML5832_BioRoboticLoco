@@ -23,7 +23,7 @@ params = getParams();
 % Time Vector for ODE45
 time = 0:.01:30;
 
-x_d = 5;
+x_d = 7;
 
 z_d = 0;
 
@@ -62,7 +62,7 @@ end
 
 %% Animation
 % Show Animation?
-animate = 1;
+animate = 0;
 if animate == 1
     animateHopper(Kinematics, T);
 end
