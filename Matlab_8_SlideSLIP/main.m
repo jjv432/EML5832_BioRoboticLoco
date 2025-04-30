@@ -33,28 +33,27 @@ x0 =[0; x_d; z; z_d]; % this was our initial
 
 %% Running stability functions
 % Running newton raphson to get a fixed point
-% surfacePlotBool = 0;
-%
-% if surfacePlotBool
-%     params.phi_0 = -pi/4.5;
-%     for i = 1
-%         createSurfacePlots(params, time, x0)
-%         params.phi_0 = params.phi_0 - .02;
-%     end
-% end
+surfacePlotBool = 1;
+
+% This loop is gonna vary 
+if surfacePlotBool
+    for i = 1
+        createSurfacePlots(params, time, x0)
+    end
+end
 
 %%
-stabilityBool = 0;
-if stabilityBool
-    fixedPoint = newtonRaphson(params, time, x0);
-
-    % Finding the stability of the fixed point
-    % maxEig = stabilityMeasure(params,time, fixedPoint)
-    x0 = fixedPoint;
-    writematrix(x0, "FixedPointSaved");
-else
-    % x0 = readmatrix("FixedPointSaved.txt");
-end
+% stabilityBool = 0;
+% if stabilityBool
+%     fixedPoint = newtonRaphson(params, time, x0);
+% 
+%     % Finding the stability of the fixed point
+%     % maxEig = stabilityMeasure(params,time, fixedPoint)
+%     x0 = fixedPoint;
+%     writematrix(x0, "FixedPointSaved");
+% else
+%     % x0 = readmatrix("FixedPointSaved.txt");
+% end
 
 %% Simulate System
 
@@ -68,7 +67,7 @@ if animate == 1
 end
 
 %% Plotting
-plotHopper = 1;
+plotHopper = 0;
 if plotHopper == 1
     plotHopperStates(Kinematics, T)
 end

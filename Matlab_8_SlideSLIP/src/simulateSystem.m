@@ -43,9 +43,9 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
             case 'stance'
 
-                if stance_counter == num_stance_runs
-                    apex_state = init;
-                end
+                % if stance_counter == num_stance_runs
+                %     apex_state = init;
+                % end
 
                 % Run the stance simulation
                 [T1, Y1, ~, ~, ie] = ode45(@(T1, Y1) stance_dynamics(T1, Y1, params), time, init, stance_options);
@@ -105,6 +105,10 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
                 end
 
             case 'flight'
+
+                if flight_counter == num_stance_runs
+                    apex_state = init;
+                end
 
                 [T1, Y1, ~, ~, ~] = ode45(@(T1, Y1) flight_dynamics(T1, Y1, params), time, init, flight_options);
 

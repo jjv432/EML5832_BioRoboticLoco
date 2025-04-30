@@ -2,28 +2,36 @@ function createSurfacePlots(params, time, x0)
     % x-axis is the initial z value, z_d value is the y-axis, stability is the
     % vertical
 
-    persistent max_z_val max_z_d_val sampleResolution z_sample_points z_d_sample_points stabilities
+    persistent max_torque min_phi_val torque_sample_resolution phi_sample_resolution torque_sample_points phi_sample_points stabilities plot_count min_torque max_phi_val
 
-    if isempty(z_sample_points)
-
-        max_z_val = 2;
-        max_z_d_val = 5;
-
-        sampleResolution = .1;
-        z_sample_points = 0:sampleResolution:max_z_val;
-        z_d_sample_points = 0:sampleResolution:max_z_d_val; 
-        stabilities = zeros(numel(z_sample_points), numel(z_d_sample_points));
+    if isempty(plot_count)
+        plot_count = 1;
     end
 
-    
+    if isempty(torque_sample_points)
 
-    for i = 1:numel(z_sample_points)
-        for j = 1:numel(z_d_sample_points)
+        min_torque = 0;
+        max_torque = 3500;
+        min_phi_val = -pi/2;
+        max_phi_val = 0;
 
-            curZ = z_sample_points(i);
-            curZ_D = z_d_sample_points(j);
-            samplePoint = [0; 1; curZ; curZ_D];
-            stabilities(i, j) = stabilityMeasure(params,time, samplePoint);
+        torque_sample_resolution = 25;
+        phi_sample_resolution = .1;
+        torque_sample_points = min_torque:torque_sample_resolution:max_torque;
+        phi_sample_points = min_phi_val:phi_sample_resolution:max_phi_val;
+        stabilities = zeros(numel(torque_sample_points), numel(phi_sample_points));
+    end
+
+
+    for i = 1:numel(torque_sample_points)
+        for j = 1:numel(phi_sample_points)
+
+            cur_torque = torque_sample_points(i);
+            cur_phi = phi_sample_points(j);
+
+            params.t_hip = cur_torque;
+            params.phi_0 = cur_phi;
+            stabilities(i, j) = stabilityMeasure(params,time, x0);
 
         end
     end
@@ -34,22 +42,22 @@ function createSurfacePlots(params, time, x0)
 
     persistent X Y
     if isempty(X)
-        [X, Y] = meshgrid(z_d_sample_points, z_sample_points);
+        [X, Y] = meshgrid(phi_sample_points, torque_sample_points);
     end
 
-    if stabilities == zeros(numel(z_sample_points), numel(z_d_sample_points))
+    if stabilities == zeros(numel(torque_sample_points), numel(phi_sample_points))
         fprintf("Failed to produce solution at %d\n", params.phi_0)
     else
 
-        curPhiDenom = (1/params.phi_0) * pi;
-        curPhiDenom = ceil(curPhiDenom * 100);
+        % curPhiDenom = (1/params.phi_0) * pi;
+        % curPhiDenom = ceil(curPhiDenom * 100);
         contourf(X, Y, real(stabilities));
         ylabel("Z Vals");
         xlabel("Z_D Vals");
         colorbar(ax,"eastoutside");
         title("Stability for " + params.phi_0);
-        saveas(gcf, "StabilityPlots/StabilityForPiOver" + curPhiDenom + "DividedBy100.png");
-
+        saveas(gcf, "StabilityPlots/Stability" + num2str(plot_count) + ".png");
     end
 
+    plot_count = plot_count + 1;
 end
