@@ -9,6 +9,7 @@ or < thing for angles instead of subtraction?
 
 
 %}
+%% Configurations
 clc;
 close all;
 clear persistent;
@@ -20,29 +21,56 @@ addpath("src");
 
 params = getParams();
 
+%% Simulations Params
 % Time Vector for ODE45
 time = 0:.01:30;
 
+% Initial State values for flight
 x_d = 7;
-
 z_d = 0;
-
 z = 1;
 
-x0 =[0; x_d; z; z_d]; % this was our initial
+x0 =[0; x_d; z; z_d];
 
-%% Running stability functions
-% Running newton raphson to get a fixed point
+%% Generate Stability Contours
+
 surfacePlotBool = 1;
 
-% This loop is gonna vary 
 if surfacePlotBool
+
+    % First, do it for normal slip model
     for i = 1
         createSurfacePlots(params, time, x0)
+        params.muS = params.muS - .01;
+    end
+    
+    % Next, do it for sliding slip model
+    for i = 1
+        createSurfacePlots(params, time, x0)
+        params.muS = params.muS - .01;
     end
 end
 
-%%
+
+%% Generating Data for a Single Simulation of the System
+
+[Kinematics, T, ~] = simulateSystem(params, time, 0, x0);
+
+%% Animation of the System
+% Show Animation?
+animate = 0;
+if animate == 1
+    animateHopper(Kinematics, T);
+end
+
+%% Plotting the system
+plotHopper = 0;
+if plotHopper == 1
+    plotHopperStates(Kinematics, T)
+end
+
+
+%% OLD
 % stabilityBool = 0;
 % if stabilityBool
 %     fixedPoint = newtonRaphson(params, time, x0);
@@ -54,23 +82,3 @@ end
 % else
 %     % x0 = readmatrix("FixedPointSaved.txt");
 % end
-
-%% Simulate System
-
-[Kinematics, T, ~] = simulateSystem(params, time, 0, x0);
-
-%% Animation
-% Show Animation?
-animate = 0;
-if animate == 1
-    animateHopper(Kinematics, T);
-end
-
-%% Plotting
-plotHopper = 0;
-if plotHopper == 1
-    plotHopperStates(Kinematics, T)
-end
-
-
-

@@ -15,7 +15,7 @@ function createSurfacePlots(params, time, x0)
         min_phi_val = -pi/2;
         max_phi_val = 0;
 
-        torque_sample_resolution = 50;
+        torque_sample_resolution = 25;
         phi_sample_resolution = .1;
         torque_sample_points = min_torque:torque_sample_resolution:max_torque;
         phi_sample_points = min_phi_val:phi_sample_resolution:max_phi_val;
