@@ -39,14 +39,16 @@ surfacePlotBool = 1;
 if surfacePlotBool
 
     % First, do it for normal slip model
+    model_boolean = 0;
     for i = 1
-        createSurfacePlots(params, time, x0)
+        createSurfacePlots(params, time, x0, model_boolean)
         params.muS = params.muS - .01;
     end
     
     % Next, do it for sliding slip model
+    model_boolean = 1;
     for i = 1
-        createSurfacePlots(params, time, x0)
+        createSurfacePlots(params, time, x0, model_boolean)
         params.muS = params.muS - .01;
     end
 end

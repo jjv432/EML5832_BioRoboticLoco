@@ -1,4 +1,4 @@
-function maxEig = stabilityMeasure(params,time, fixedPoint)
+function maxEig = stabilityMeasure(params,time, fixedPoint, model_boolean)
 
     %% Stability
     slope = [];
@@ -9,10 +9,10 @@ function maxEig = stabilityMeasure(params,time, fixedPoint)
 
     for i = 1:numel(x0)
         x0(i) = x0(i) + del;
-        [~, ~,R1] = simulateSystem(params, time, 1, x0);
+        [~, ~,R1] = simulateSystem(params, time, 1, x0, model_boolean);
 
         x0(i) = x0(i) - 2*del;
-        [~, ~,R2] = simulateSystem(params, time, 1, x0);
+        [~, ~,R2] = simulateSystem(params, time, 1, x0, model_boolean);
 
         if (numel(R1) ~= 4 || numel(R2) ~=4 || numel(R1) ~= numel(R2))
             slope = [];

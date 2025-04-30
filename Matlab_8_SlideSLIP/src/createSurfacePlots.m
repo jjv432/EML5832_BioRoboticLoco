@@ -1,4 +1,4 @@
-function createSurfacePlots(params, time, x0)
+function createSurfacePlots(params, time, x0, model_boolean)
     % x-axis is the initial z value, z_d value is the y-axis, stability is the
     % vertical
 
@@ -31,7 +31,7 @@ function createSurfacePlots(params, time, x0)
 
             params.t_hip = cur_torque;
             params.phi_0 = cur_phi;
-            stabilities(i, j) = stabilityMeasure(params,time, x0);
+            stabilities(i, j) = stabilityMeasure(params,time, x0, model_boolean);
 
         end
     end

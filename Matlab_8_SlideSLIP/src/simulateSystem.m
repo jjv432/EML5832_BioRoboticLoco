@@ -1,4 +1,4 @@
-function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, init_init)
+function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, init_init, model_boolean)
 
 
     % How many flight phases should be ran to do newton raphson comparison
@@ -6,6 +6,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
     num_stance_runs = 2;
 
+    slideFailure = 0;
 
     % Ending Conditions for ODE45
     stance_options = odeset('Events', @(t, y) stance_event_func(t,y,params));
@@ -161,6 +162,12 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
             case 'sliding'
 
+                if model_boolean == 0
+                    disp("SLIP Model Failed due to Sliding");
+                    slideFailure = 1;
+                    break;
+                end
+
                 clear slide_event_func
                 % Run the stance simulation
                 [T1, Y1, ~, ~, ie] = ode45(@(T1, Y1) slide_dynamics(T1, Y1, params), time, init, slide_options);
@@ -216,7 +223,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
     end
 
-    if nr_bool
+    if nr_bool && ~slideFailure
         nr_results = apex_state;
     else
         nr_results = [];
