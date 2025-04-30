@@ -20,7 +20,7 @@ abandon the idea of comparing the flight stances for now.
     E = R - x0;
     Error = norm(E);
 
-    states_to_vary = [2, 4];
+    states_to_vary = [3];
 
     while (Error > tol) && (stallIterations < nr_max_iter)
 

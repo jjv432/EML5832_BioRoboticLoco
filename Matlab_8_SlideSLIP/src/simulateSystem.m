@@ -33,13 +33,12 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     if nr_bool
         duration = 12;
     else
-        duration = 9;
+        duration = 18;
     end
 
     % Running 'duration' number of states
     for i = 1:duration
 
-        disp(state);
         switch state
 
             case 'stance'
