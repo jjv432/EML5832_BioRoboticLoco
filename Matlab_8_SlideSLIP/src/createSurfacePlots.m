@@ -15,7 +15,7 @@ function createSurfacePlots(params, time, x0)
         min_phi_val = -pi/2;
         max_phi_val = 0;
 
-        torque_sample_resolution = 25;
+        torque_sample_resolution = 50;
         phi_sample_resolution = .1;
         torque_sample_points = min_torque:torque_sample_resolution:max_torque;
         phi_sample_points = min_phi_val:phi_sample_resolution:max_phi_val;
@@ -55,6 +55,7 @@ function createSurfacePlots(params, time, x0)
         ylabel("Z Vals");
         xlabel("Z_D Vals");
         colorbar(ax,"eastoutside");
+        clim([0 2]);
         title("Stability for " + params.phi_0);
         saveas(gcf, "StabilityPlots/Stability" + num2str(plot_count) + ".png");
     end
