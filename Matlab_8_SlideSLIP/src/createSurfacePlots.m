@@ -2,35 +2,42 @@ function createSurfacePlots(params, time, x0, model_boolean)
     % x-axis is the initial z value, z_d value is the y-axis, stability is the
     % vertical
 
-    persistent max_torque min_phi_val torque_sample_resolution phi_sample_resolution torque_sample_points phi_sample_points stabilities plot_count min_torque max_phi_val
+    persistent max_z_d min_z z_sample_resolution z_d_sample_resolution z_d_sample_points z_sample_points stabilities plot_count min_z_d max_z
 
     if isempty(plot_count)
         plot_count = 1;
     end
 
-    if isempty(torque_sample_points)
+    if isempty(z_d_sample_points)
 
-        min_torque = 0;
-        max_torque = 3500;
-        min_phi_val = -pi/2;
-        max_phi_val = 0;
+        % min_torque = 0;
+        % max_torque = 3500;
+        % min_phi_val = -pi/2;
+        % max_phi_val = 0;
 
-        torque_sample_resolution = 25;
-        phi_sample_resolution = .1;
-        torque_sample_points = min_torque:torque_sample_resolution:max_torque;
-        phi_sample_points = min_phi_val:phi_sample_resolution:max_phi_val;
-        stabilities = zeros(numel(torque_sample_points), numel(phi_sample_points));
+        min_z_d = 0;
+        max_z_d = 3500;
+        min_z = -pi/2;
+        max_z = 0;
+
+        z_sample_resolution = 25;
+        z_d_sample_resolution = .1;
+        z_d_sample_points = min_z_d:z_sample_resolution:max_z_d;
+        z_sample_points = min_z:z_d_sample_resolution:max_z;
+        stabilities = zeros(numel(z_d_sample_points), numel(z_sample_points));
     end
 
 
-    for i = 1:numel(torque_sample_points)
-        for j = 1:numel(phi_sample_points)
+    for i = 1:numel(z_d_sample_points)
+        for j = 1:numel(z_sample_points)
 
-            cur_torque = torque_sample_points(i);
-            cur_phi = phi_sample_points(j);
+            cur_z_d = z_d_sample_points(i);
+            cur_z = z_sample_points(j);
 
-            params.t_hip = cur_torque;
-            params.phi_0 = cur_phi;
+            % params.t_hip = cur_z_d;
+            % params.phi_0 = cur_z;
+            x0(3) = cur_z;
+            x0(4) = cur_z_d;
             stabilities(i, j) = stabilityMeasure(params,time, x0, model_boolean);
 
         end
@@ -42,10 +49,10 @@ function createSurfacePlots(params, time, x0, model_boolean)
 
     persistent X Y
     if isempty(X)
-        [X, Y] = meshgrid(phi_sample_points, torque_sample_points);
+        [X, Y] = meshgrid(z_sample_points, z_d_sample_points);
     end
 
-    if stabilities == zeros(numel(torque_sample_points), numel(phi_sample_points))
+    if stabilities == zeros(numel(z_d_sample_points), numel(z_sample_points))
         fprintf("Failed to produce solution at %d\n", params.phi_0)
     else
 
