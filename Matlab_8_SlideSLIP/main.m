@@ -56,7 +56,8 @@ end
 
 %% Generating Data for a Single Simulation of the System
 
-[Kinematics, T, ~] = simulateSystem(params, time, 0, x0);
+model_boolean = 1;
+[Kinematics, T, ~] = simulateSystem(params, time, 0, x0, model_boolean);
 
 %% Animation of the System
 % Show Animation?

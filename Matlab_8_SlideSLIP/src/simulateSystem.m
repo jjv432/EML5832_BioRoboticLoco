@@ -4,8 +4,6 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
     % How many flight phases should be ran to do newton raphson comparison
     num_flight_runs = 2;
 
-    num_stance_runs = 2;
-
     slideFailure = 0;
 
     % Ending Conditions for ODE45
@@ -24,34 +22,25 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
     apex_state = [];
     flight_counter = 0;
-    stance_counter = 0;
-
 
     state = 'flight';
     init = init_init;
 
     % If you're running newton rhapson, only run each state once
-    if nr_bool
-        duration = 12;
-    else
-        duration = 18;
-    end
 
+    duration = 18;
+
+    iter = 0;
+    stop_simulation = 0;
     % Running 'duration' number of states
-    for i = 1:duration
+    while ~stop_simulation
 
         switch state
 
             case 'stance'
 
-                % if stance_counter == num_stance_runs
-                %     apex_state = init;
-                % end
-
                 % Run the stance simulation
                 [T1, Y1, ~, ~, ie] = ode45(@(T1, Y1) stance_dynamics(T1, Y1, params), time, init, stance_options);
-
-                stance_counter = stance_counter + 1;
 
                 % Parse out the results
                 l_vals = Y1(:, 1);
@@ -107,7 +96,7 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
             case 'flight'
 
-                if flight_counter == num_stance_runs
+                if flight_counter == (num_flight_runs -1)
                     apex_state = init;
                 end
 
@@ -221,7 +210,12 @@ function [Kinematics, T, nr_results] = simulateSystem(params, time, nr_bool, ini
 
         end
 
+        iter = iter + 1;
+        if (nr_bool &&  flight_counter == num_flight_runs) || (iter == duration)
+            stop_simulation = 1;
+        end
     end
+
 
     if nr_bool && ~slideFailure
         nr_results = apex_state;
