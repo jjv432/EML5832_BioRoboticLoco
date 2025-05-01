@@ -2,7 +2,7 @@ function createSurfacePlots(params, time, x0, model_boolean)
     % x-axis is the initial z value, z_d value is the y-axis, stability is the
     % vertical
 
-    persistent max_x_d min_z z_sample_resolution x_d_sample_resolution x_d_sample_points z_sample_points stabilities plot_count min_x_d max_z
+    persistent min_phi_val max_phi_val max_x_d min_z phi_sample_resolution x_d_sample_resolution x_d_sample_points phi_sample_points stabilities plot_count min_x_d max_z
 
     if isempty(plot_count)
         plot_count = 1;
@@ -10,33 +10,27 @@ function createSurfacePlots(params, time, x0, model_boolean)
 
     if isempty(x_d_sample_points)
 
-        % min_torque = 0;
-        % max_torque = 3500;
-        % min_phi_val = -pi/2;
-        % max_phi_val = 0;
-
-        min_x_d = 6;
+        min_phi_val = -pi/2;
+        max_phi_val = 0;
+        
+        min_x_d = 1;
         max_x_d = 10;
-        min_z = 1;
-        max_z = 7;
 
-        z_sample_resolution = .5;
-        x_d_sample_resolution = .5;
+        phi_sample_resolution = 1;
+        x_d_sample_resolution = 1;
         x_d_sample_points = min_x_d:x_d_sample_resolution:max_x_d;
-        z_sample_points = min_z:z_sample_resolution:max_z;
-        stabilities = zeros(numel(x_d_sample_points), numel(z_sample_points));
+        phi_sample_points = min_phi_val:phi_sample_resolution:max_phi_val;
+        stabilities = zeros(numel(x_d_sample_points), numel(phi_sample_points));
     end
 
 
     for i = 1:numel(x_d_sample_points)
-        for j = 1:numel(z_sample_points)
+        for j = 1:numel(phi_sample_points)
 
             cur_x_d = x_d_sample_points(i);
-            cur_z = z_sample_points(j);
+            cur_phi = phi_sample_points(j);
 
-            % params.t_hip = cur_z_d;
-            % params.phi_0 = cur_z;
-            x0(3) = cur_z;
+            params.phi_0 = cur_phi;
             x0(2) = cur_x_d;
             stabilities(i, j) = stabilityMeasure(params,time, x0, model_boolean);
 
@@ -49,10 +43,10 @@ function createSurfacePlots(params, time, x0, model_boolean)
 
     persistent X Y
     if isempty(X)
-        [X, Y] = meshgrid(z_sample_points, x_d_sample_points);
+        [X, Y] = meshgrid(phi_sample_points, x_d_sample_points);
     end
 
-    if stabilities == zeros(numel(x_d_sample_points), numel(z_sample_points))
+    if stabilities == zeros(numel(x_d_sample_points), numel(phi_sample_points))
         fprintf("Failed to produce solution at %d\n", params.phi_0)
     else
 
