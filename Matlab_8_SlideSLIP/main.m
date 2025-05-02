@@ -43,7 +43,7 @@ if surfacePlotBool
     end
     
     % Next, do it for sliding slip model
-    clear createSurfacePlots
+    % clear createSurfacePlots
     model_boolean = 1;
     for i = 1
         createSurfacePlots(params, time, x0, model_boolean)
