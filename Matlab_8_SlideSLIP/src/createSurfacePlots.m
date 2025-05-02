@@ -51,6 +51,7 @@ function createSurfacePlots(params, time, x0, model_boolean)
     if stabilities == zeros(numel(x_d_sample_points), numel(phi_sample_points))
         fprintf("Failed to produce solution at %d\n", params.phi_0)
     else
+        stabilities(stabilities > 2) = NaN;
         contourf(X, Y, real(stabilities));
         xlabel("\phi_0 (rad)");
         ylabel("V_x (m/s)");

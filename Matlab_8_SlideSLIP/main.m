@@ -36,11 +36,11 @@ surfacePlotBool = 1;
 if surfacePlotBool
 
     % First, do it for normal slip model
-    model_boolean = 0;
-    for i = 1
-        createSurfacePlots(params, time, x0, model_boolean)
-        % params.muS = params.muS - .01;
-    end
+    % model_boolean = 0;
+    % for i = 1
+    %     createSurfacePlots(params, time, x0, model_boolean)
+    %     % params.muS = params.muS - .01;
+    % end
     
     % Next, do it for sliding slip model
     clear createSurfacePlots
@@ -65,7 +65,7 @@ if animate == 1
 end
 
 %% Plotting the system
-plotHopper = 1;
+plotHopper = 0;
 if plotHopper == 1
     plotHopperStates(Kinematics, T)
 end
