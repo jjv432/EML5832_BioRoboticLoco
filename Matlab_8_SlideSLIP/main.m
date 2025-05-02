@@ -12,29 +12,26 @@ or < thing for angles instead of subtraction?
 %% Configurations
 clc;
 close all;
-clear persistent;
-clear functions;
-clearvars;
+clear all;
 
 % Add functions in
 addpath("src");
 
 params = getParams();
-params.phi_0 = -pi/8;
 %% Simulations Params
 % Time Vector for ODE45
 time = 0:.01:30;
 
 % Initial State values for flight
-x_d = 5;
-z_d = 0;
-z = 1;
+x_d = 8;
+z_d = -2;
+z = 1.1;
 
 x0 =[0; x_d; z; z_d];
 
 %% Generate Stability Contours
 
-surfacePlotBool = 0;
+surfacePlotBool = 1;
 
 if surfacePlotBool
 
@@ -42,32 +39,33 @@ if surfacePlotBool
     model_boolean = 0;
     for i = 1
         createSurfacePlots(params, time, x0, model_boolean)
-        params.muS = params.muS - .01;
+        % params.muS = params.muS - .01;
     end
     
     % Next, do it for sliding slip model
+    clear createSurfacePlots
     model_boolean = 1;
     for i = 1
         createSurfacePlots(params, time, x0, model_boolean)
-        params.muS = params.muS - .01;
+        % params.muS = params.muS - .01;
     end
 end
 
 
 %% Generating Data for a Single Simulation of the System
 
-model_boolean = 0;
+model_boolean = 1;
 [Kinematics, T, ~] = simulateSystem(params, time, 0, x0, model_boolean);
 
 %% Animation of the System
 % Show Animation?
-animate = 1;
+animate = 0;
 if animate == 1
     animateHopper(Kinematics, T);
 end
 
 %% Plotting the system
-plotHopper = 0;
+plotHopper = 1;
 if plotHopper == 1
     plotHopperStates(Kinematics, T)
 end
