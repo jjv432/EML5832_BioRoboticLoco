@@ -24,7 +24,7 @@ time = 0:.01:30;
 
 % Initial State values for flight
 x_d = 8;
-z_d = -2;
+z_d = -1;
 z = 1.1;
 
 x0 =[0; x_d; z; z_d];
@@ -36,11 +36,11 @@ surfacePlotBool = 1;
 if surfacePlotBool
 
     % First, do it for normal slip model
-    % model_boolean = 0;
-    % for i = 1
-    %     createSurfacePlots(params, time, x0, model_boolean)
-    %     % params.muS = params.muS - .01;
-    % end
+    model_boolean = 0;
+    for i = 1
+        createSurfacePlots(params, time, x0, model_boolean)
+        % params.muS = params.muS - .01;
+    end
     
     % Next, do it for sliding slip model
     clear createSurfacePlots
